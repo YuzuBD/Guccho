@@ -1,25 +1,14 @@
 <script setup lang="ts">
 import { useSession } from '~/store/session'
-import { showAdminPanel } from '~/common/utils/admin'
 
 const scrollY = useScrollYObserver()
-const { t } = useI18n()
 const session = useSession()
 const route = useRoute()
 
-const searchModalWrapper = shallowRef<{
-  searchModal: {
-    showModal: () => void
-  }
-}>()
-
 const detached = shallowRef(false)
 watch(scrollY, () => (detached.value = scrollY.value > 0))
-const root = shallowRef<HTMLElement>()
 
 const shownMenu = shallowReactive({
-  left: false,
-  right: false,
   user: false,
 })
 
@@ -31,130 +20,94 @@ function clearFocus() {
 </script>
 
 <template>
-  <app-search-modal ref="searchModalWrapper" />
   <div
-    ref="root" class="w-full transition-[padding] sticky p-0 top-0 navbar-container z-40 h-16"
+    class="w-full transition-all duration-300 sticky top-0 navbar-container z-40 h-20"
     :class="[detached && 'detached']"
   >
-    <div
-      class="navbar w-full transition-[border-radius]" :class="[
-        shownMenu.left && 'navbar-tint',
-        shownMenu.user && 'navbar-tint',
-      ]"
-    >
-      <div class="self-start -navbar-start me-auto">
-        <label for="app-drawer-toggle" class="btn btn-ghost drawer-button lg:hidden">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
-          </svg>
-        </label>
-        <app-nav-brand class="hidden lg:flex" />
-        <button
-          class="btn btn-ghost btn-circle lg:hidden"
-          @click.prevent="() => searchModalWrapper?.searchModal?.showModal()"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" size="100%" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
+    <div class="navbar-minimal w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center justify-between">
+      <!-- Brand / Logo -->
+      <div class="navbar-start">
+        <app-nav-brand />
       </div>
-      <div class="-navbar-end self-end items-baseline !gap-2">
-        <ul class="hidden menu nav-menu menu-horizontal lg:inline-flex flex-nowrap">
-          <app-nav-items />
-        </ul>
-        <button
-          class="invisible btn btn-ghost btn-circle flex lg:visible"
-          @click.prevent="() => searchModalWrapper?.searchModal?.showModal()"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" size="100%" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-        <div class="self-center dropdown dropdown-end">
-          <label tabindex="0" class="flex pr-1 transition-transform cursor-pointer active:scale-90">
-            <img v-if="session.loggedIn" :src="session.$state.user?.avatarSrc" class="avatar-img">
-            <icon v-else class="w-full h-full avatar-img" name="solar:emoji-funny-circle-broken" />
+
+      <!-- Right Side - User Menu Only -->
+      <div class="navbar-end flex items-center gap-4">
+        <!-- User Menu -->
+        <div class="dropdown dropdown-end">
+          <label tabindex="0" class="cursor-pointer hover:opacity-60 transition-opacity">
+            <img 
+              v-if="session.loggedIn" 
+              :src="session.$state.user?.avatarSrc" 
+              class="w-10 h-10 rounded-full object-cover"
+            >
+            <div v-else class="user-icon-placeholder">
+              <icon class="w-10 h-10" name="solar:user-circle-bold" />
+            </div>
           </label>
           <ul
-            tabindex="0" class="p-2 mt-4 menu menu-tint menu-md dropdown-content w-52" :class="{
-              'dropdown-open': shownMenu.user,
-            }"
+            tabindex="0" 
+            class="menu-minimal mt-4 dropdown-content" 
+            :class="{ 'dropdown-open': shownMenu.user }"
           >
             <template v-if="session.loggedIn">
               <li>
                 <nuxt-link-locale
                   :to="{
-                    name: 'me-settings',
-                  }" @click="clearFocus"
-                >
-                  <icon name="solar:settings-bold" class="w-5 h-5" size="100%" />
-                  {{ t('title.settings') }}
-                </nuxt-link-locale>
-              </li>
-              <li>
-                <nuxt-link-locale
-                  :to="{
-                    name: 'me-relations',
-                  }" @click="clearFocus"
-                >
-                  <icon name="tabler:circles-relation" class="w-5 h-5" size="100%" />
-                  {{ t('title.relations') }}
-                </nuxt-link-locale>
-              </li>
-              <li>
-                <nuxt-link-locale
-                  :to="{
                     name: 'user-handle',
-                    params: {
-                      handle: `@${session.$state.user?.safeName}`,
-                    },
-                  }" @click="clearFocus"
+                    params: { handle: `@${session.$state.user?.safeName}` },
+                  }" 
+                  @click="clearFocus"
                 >
-                  <icon name="mingcute:profile-fill" class="w-5 h-5" size="100%" />
-                  {{ t('title.userpage') }}
+                  <icon name="mingcute:profile-fill" class="w-4 h-4" />
+                  <span>Profile</span>
                 </nuxt-link-locale>
               </li>
-              <li v-if="session.$state.user && showAdminPanel(session.$state.user.roles)">
-                <nuxt-link-locale
-                  :to="{
-                    name: 'admin',
-                  }" @click="clearFocus"
-                >
-                  <icon name="material-symbols:admin-panel-settings-rounded" class="w-5 h-5" size="100%" />
-                  {{ t('title.admin-panel') }}
-                </nuxt-link-locale>
-              </li>
-              <div class="my-0 divider" />
               <li>
-                <nuxt-link-locale :to="{ name: 'auth-logout', query: { redirect: route.fullPath } }" @click="clearFocus">
-                  <icon name="majesticons:logout-half-circle-line" class="w-5 h-5" size="100%" />
-                  {{ $t('global.logout') }}
+                <nuxt-link-locale
+                  :to="{ name: 'leaderboard-mode' }" 
+                  @click="clearFocus"
+                >
+                  <icon name="material-symbols:leaderboard" class="w-4 h-4" />
+                  <span>Leaderboard</span>
+                </nuxt-link-locale>
+              </li>
+              <li>
+                <nuxt-link-locale
+                  :to="{ name: 'me-settings' }" 
+                  @click="clearFocus"
+                >
+                  <icon name="solar:settings-bold" class="w-4 h-4" />
+                  <span>Settings</span>
+                </nuxt-link-locale>
+              </li>
+              <div class="menu-divider" />
+              <li>
+                <nuxt-link-locale 
+                  :to="{ name: 'auth-logout', query: { redirect: route.fullPath } }" 
+                  @click="clearFocus"
+                >
+                  <icon name="majesticons:logout-half-circle-line" class="w-4 h-4" />
+                  <span>Logout</span>
                 </nuxt-link-locale>
               </li>
             </template>
             <template v-else>
               <li>
-                <nuxt-link-locale :to="{ name: 'auth-login', query: { redirect: route.fullPath } }" @click="clearFocus">
-                  <icon name="majesticons:login-half-circle-line" class="w-5 h-5" size="100%" />
-                  {{ $t('global.login') }}
+                <nuxt-link-locale 
+                  :to="{ name: 'auth-login', query: { redirect: route.fullPath } }" 
+                  @click="clearFocus"
+                >
+                  <icon name="majesticons:login-half-circle-line" class="w-4 h-4" />
+                  <span>Login</span>
                 </nuxt-link-locale>
               </li>
               <li>
-                <nuxt-link-locale :to="{ name: 'auth-register' }" @click="clearFocus">
-                  <icon name="mingcute:signature-fill" class="w-5 h-5" size="100%" />
-                  {{ $t('global.register') }}
+                <nuxt-link-locale 
+                  :to="{ name: 'auth-register' }" 
+                  @click="clearFocus"
+                >
+                  <icon name="mingcute:signature-fill" class="w-4 h-4" />
+                  <span>Register</span>
                 </nuxt-link-locale>
               </li>
             </template>
@@ -166,113 +119,50 @@ function clearFocus() {
 </template>
 
 <style lang="postcss">
-.navbar-tint,
-.detached>.navbar {
-  @apply bg-gbase-100/85 dark:bg-gbase-700/80;
-  @apply backdrop-blur-md shadow-md;
-  @apply backdrop-saturate-[0.9] backdrop-brightness-[0.95];
-  @apply dark:backdrop-saturate-[1] dark:backdrop-brightness-[1];
+.navbar-container {
+  @apply bg-white/80 dark:bg-[#0a0a0a]/80;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid transparent;
 }
 
-.navbar {
-  @apply border-[1px] border-gbase-50/0 dark:border-gbase-500/0;
-  transition: all 0.5s cubic-bezier(0.05, 1, 0.4, 0.95);
+.navbar-container.detached {
+  @apply bg-white/95 dark:bg-[#0a0a0a]/95;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
 
-  & .btn,
-  & a,
-  & label.dropdown {
-    @apply outline-transparent;
-    @apply transition-all;
-  }
-
-  & ul.nav-menu {
-    @apply p-0;
-    @apply transition-[padding];
-  }
-
-  & ul.nav-menu>li,
-  &.btn {
-    min-height: 3em;
-    height: 3em;
-    @apply outline-transparent;
-    @apply transition-all;
-  }
-
-  .navbar-center {
-    select {
-      @apply self-baseline;
-    }
-  }
-
-  .avatar-img {
-    @apply transition-all;
-    @apply ring ring-gbase-600/70 ring-offset-gbase-100 ring-offset-2 pointer-events-none;
-    @apply rounded-full object-cover aspect-square;
-    @apply w-8 h-8;
-  }
-
-  & .navbar-end {
-    @apply transition-[gap];
-    @apply gap-0;
+@media (prefers-color-scheme: dark) {
+  .navbar-container.detached {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 }
 
-.detached {
-  @apply px-2 pt-1;
+.navbar-minimal {
+  @apply h-full;
+}
 
-  & .navbar {
-    @apply border-gbase-50/30 dark:border-gbase-500/30;
-    @apply rounded-2xl;
-    @apply min-h-0;
+.user-icon-placeholder {
+  @apply flex items-center justify-center;
+}
 
-    .avatar-img {
-      @apply transition-all;
-      @apply w-7 h-7;
-    }
-
-    /* > ul > li */
-    & ul.nav-menu>li {
-      @apply justify-center;
-    }
-
-    & select {
-      @apply transition-all;
-      @apply origin-top scale-95;
-    }
-
-    & .btn,
-    & ul.nav-menu>li {
-      height: 2rem;
-      min-height: 2rem;
-      @apply outline-transparent;
-      @apply transition-all;
-
-      &.btn-circle {
-        width: 2rem;
-        min-width: 2rem;
-      }
-
-      & a {
-        @apply m-0
-      }
-    }
-
-    & .navbar-end {
-      @apply transition-[gap];
-      @apply gap-2;
+.menu-minimal {
+  @apply min-w-[200px] p-2 bg-white dark:bg-[#1a1a1a];
+  @apply border border-black/5 dark:border-white/5;
+  backdrop-filter: blur(20px);
+  
+  li {
+    @apply my-1;
+    
+    a {
+      @apply flex items-center gap-3 px-4 py-3 text-sm font-light;
+      @apply text-black dark:text-white;
+      @apply hover:bg-black/5 dark:hover:bg-white/5;
+      @apply transition-colors duration-200;
+      border-radius: 0;
     }
   }
 }
-</style>
 
-<style lang="postcss" scoped>
-.menu-tint {
-  @apply shadow rounded-box bg-base-100/80 backdrop-blur-lg;
-}
-
-.detached {
-  .menu-tint {
-    @apply bg-base-100;
-  }
+.menu-divider {
+  @apply h-px bg-black/5 dark:bg-white/5 my-2;
 }
 </style>

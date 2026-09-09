@@ -200,73 +200,145 @@ de-DE:
 </i18n>
 
 <template>
-  <div v-if="errorTop">
+  <div v-if="errorTop" class="error-message">
     {{ errorTop }}
   </div>
   <template v-else-if="page.user">
-    <section v-if="top?.count">
-      <div class="card" :class="[pendingTop && 'pointer-events-none']">
-        <!-- <div
-            class="justify-center p-1 card-title rounded-2xl bg-gbase-300/30"
+    <section v-if="top?.count" class="scores-section-minimal">
+      <div class="section-header-minimal">
+        <h2 class="section-title-minimal">{{ t('top') }}</h2>
+        <span class="section-count-minimal">{{ top.count }}</span>
+      </div>
+
+      <div
+        class="scores-list-minimal"
+        :class="{ 'loading-state': pendingTop }"
+      >
+        <transition :name="transition">
+          <ul
+            :key="top.lastSwitcherStatus.mode
+              + top.lastSwitcherStatus.ruleset
+              + stabilizeScoreRank(top.lastSwitcherStatus.rankingSystem)
+              + page.user.id
+              + top.page
+            "
+            class="score-items"
           >
-            First Ranks ({{ top.count }})
-          </div> -->
-        <div class="flex items-center p-1 two-tone w-100">
-          <icon name="pajamas:first-contribution" class="w-1/6 text-3xl opacity-70" />
-          <div class="flex w-2/3">
-            <div class="mx-auto text-3xl font-semibold">
-              {{ t('top') }}
-            </div>
-          </div>
-          <div class="flex w-1/6">
-            <div class="mx-auto text-2xl italic font-light opacity-90">
-              {{ top.count }}
-            </div>
-          </div>
-        </div>
-        <div
-          class="transition-[filter] transition-opacity duration-200" :class="{
-            'saturate-50 opacity-30': pendingTop,
-          }"
+            <li v-for="i in top.scores" :key="`tops-${i.id}`">
+              <app-score-list-item
+                :score="i"
+                :mode="top.lastSwitcherStatus.mode"
+                :ruleset="top.lastSwitcherStatus.ruleset"
+                :ranking-system="top.lastSwitcherStatus.rankingSystem"
+              />
+            </li>
+          </ul>
+        </transition>
+      </div>
+
+      <div class="pagination-minimal">
+        <button
+          class="pagination-btn"
+          :disabled="topPage === 0"
+          @click="prevTop"
         >
-          <div class="relative">
-            <transition :name="transition">
-              <ul
-                :key="top.lastSwitcherStatus.mode
-                  + top.lastSwitcherStatus.ruleset
-                  + stabilizeScoreRank(top.lastSwitcherStatus.rankingSystem)
-                  + page.user.id
-                  + top.page
-                "
-              >
-                <li v-for="i in top.scores" :key="`bests-${i.id}`" class="score">
-                  <app-score-list-item
-                    :score="i" :mode="top.lastSwitcherStatus.mode"
-                    :ruleset="top.lastSwitcherStatus.ruleset" :ranking-system="top.lastSwitcherStatus.rankingSystem"
-                  />
-                </li>
-              </ul>
-            </transition>
-          </div>
-        </div>
-        <div
-          class="flex w-full mt-1 rounded-lg shadow join bg-gbase-300/30 dark:bg-gbase-700/50"
-          style="--rounded-btn: 1rem"
+          Previous
+        </button>
+        <button
+          class="pagination-current"
+          @click="refreshTop()"
         >
-          <button class="join-item btn btn-ghost" :disabled="topPage === 0" @click="prevTop">
-            «
-          </button>
-          <button class="join-item btn btn-ghost grow" @click="refreshTop()">
-            {{ t('page', { page: topPage + 1 }) }}
-          </button>
-          <button class="join-item btn btn-ghost" :disabled="top.scores.length < 10" @click="nextTop">
-            »
-          </button>
-        </div>
+          Page {{ topPage + 1 }}
+        </button>
+        <button
+          class="pagination-btn"
+          :disabled="top.scores.length < 10"
+          @click="nextTop"
+        >
+          Next
+        </button>
       </div>
     </section>
-    <div v-else-if="!top?.scores.length && pendingTop">
+    <div v-else-if="!top?.scores.length && pendingTop" class="loading-message">
       {{ t('loading') }}
     </div>
   </template>
 </template>
+
+<style scoped lang="postcss">
+.error-message,
+.loading-message {
+  @apply py-12 text-center text-sm font-light;
+  @apply text-gbase-500 dark:text-gbase-500;
+}
+
+.scores-section-minimal {
+  @apply py-8 md:py-12;
+}
+
+.section-header-minimal {
+  @apply flex items-baseline justify-between pb-6;
+  @apply border-b border-black/5 dark:border-white/5;
+}
+
+.section-title-minimal {
+  @apply text-2xl md:text-3xl font-light tracking-tight;
+  @apply text-black dark:text-white;
+}
+
+.section-count-minimal {
+  @apply text-sm font-light;
+  @apply text-gbase-500 dark:text-gbase-500;
+  font-variant-numeric: tabular-nums;
+}
+
+.scores-list-minimal {
+  @apply transition-opacity duration-200;
+}
+
+.scores-list-minimal.loading-state {
+  @apply opacity-30;
+}
+
+.score-items > li {
+  @apply border-b border-black/5 dark:border-white/5;
+}
+
+.score-items > li:last-child {
+  @apply border-b-0;
+}
+
+.pagination-minimal {
+  @apply flex items-center gap-2 mt-6;
+}
+
+.pagination-btn {
+  @apply px-4 py-2 text-sm font-light;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply disabled:opacity-30 disabled:pointer-events-none;
+  @apply transition-all duration-200;
+}
+
+.pagination-current {
+  @apply flex-1 px-4 py-2 text-sm font-light text-center;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply transition-all duration-200;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+</style>

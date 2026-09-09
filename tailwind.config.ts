@@ -30,16 +30,19 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          'Kodchasan',
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
           'Hannotate SC',
-          // 'LXGW WenKai',
-          // 'ヒラギノ丸ゴ Pro W4', 'ヒラギノ丸ゴ Pro', 'Hiragino Maru Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'HG丸ｺﾞｼｯｸM-PRO', 'HGMaruGothicMPRO',
           ...defaultTheme.fontFamily.sans,
         ],
       },
       colors,
       animation: {
         'role-text': 'text 7s ease infinite',
+        'fade-in': 'fadeIn 1.2s ease-out forwards',
+        'slide-up': 'slideUp 0.8s ease-out forwards',
       },
       keyframes: {
         'role-text': {
@@ -52,6 +55,34 @@ module.exports = {
             'background-position': 'bottom center',
           },
         },
+        'fadeIn': {
+          'from': {
+            opacity: '0',
+            transform: 'translateY(20px)',
+          },
+          'to': {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+        'slideUp': {
+          'from': {
+            opacity: '0',
+            transform: 'translateY(40px)',
+          },
+          'to': {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+      },
+      letterSpacing: {
+        tighter: '-0.02em',
+        tight: '-0.01em',
+        normal: '0',
+        wide: '0.01em',
+        wider: '0.05em',
+        widest: '0.15em',
       },
     },
     hljs: {

@@ -31,7 +31,7 @@ const { l1Status, l2Status } = useZoomModal()
         aria-label="Close sidebar"
         class="drawer-overlay"
       />
-      <ul class="min-h-full p-4 menu w-80 bg-base-200">
+      <ul class="min-h-full p-4 menu w-80 bg-white dark:bg-[#1a1a1a]">
         <app-nav-items>
           <template #start>
             <li>
@@ -46,8 +46,6 @@ const { l1Status, l2Status } = useZoomModal()
 
 <style lang="scss">
 @use "~/assets/styles/modal.scss" as m;
-// $zoom-content-stage1: saturate(0.4) opacity(0.5);
-// $zoom-content-stage2: saturate(0.4) opacity(0.2);
 
 $scale: scale(0.98);
 $scale2: scale(0.96);
@@ -58,19 +56,14 @@ $scale2: scale(0.96);
   transition-timing-function: m.$animate-function;
 
   &[data-l1-status="show"] {
-
     &[data-l2-status="closed"] {
       transform: $scale;
-      // filter: $zoom-content-stage1;
     }
 
     &[data-l2-status="show"] {
       transform: $scale2;
-      // filter: $zoom-content-stage2;
     }
-
   }
-
 }
 
 .zoom-modal-container[data-l2-status="show"] > dialog::backdrop {
@@ -78,7 +71,7 @@ $scale2: scale(0.96);
 }
 
 #app-drawer .drawer-toggle:checked ~ .drawer-side > .drawer-overlay {
-  @apply bg-gbase-950/30 dark:bg-gbase-950/70;
+  @apply bg-black/20 dark:bg-black/60;
   @apply transition-colors;
   transition-duration: 350ms;
 }
@@ -88,14 +81,13 @@ $scale2: scale(0.96);
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 350ms;
   transition-delay: 30ms;
-
 }
 
 #app-drawer .drawer-toggle:checked ~ .drawer-content > * {
   @apply translate-x-5;
   transition-duration: 250ms;
   transition-delay: 50ms;
-  filter: saturate(0.5);
+  filter: saturate(0.7) brightness(0.95);
 }
 
 #layout.safari {

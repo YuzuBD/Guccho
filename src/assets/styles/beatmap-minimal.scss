@@ -1,0 +1,222 @@
+/* Additional minimal styles for beatmap pages */
+
+/* Beatmap header */
+.beatmap-header-minimal {
+  @apply py-12 md:py-16 border-b border-black/5 dark:border-white/5;
+}
+
+.beatmap-title {
+  @apply text-4xl md:text-5xl font-light tracking-tight mb-2;
+}
+
+.beatmap-artist {
+  @apply text-2xl md:text-3xl font-light text-gbase-600 dark:text-gbase-400;
+}
+
+/* Difficulty tabs */
+.difficulty-tabs {
+  @apply flex flex-wrap gap-2 mt-8;
+}
+
+.difficulty-tab {
+  @apply px-4 py-2 text-sm font-light tracking-wide;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply transition-colors duration-200;
+}
+
+.difficulty-tab.active {
+  @apply bg-black text-white dark:bg-white dark:text-black;
+  @apply border-black dark:border-white;
+}
+
+/* Beatmap info grid */
+.beatmap-info-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 py-12 md:py-16;
+}
+
+.beatmap-info-item {
+  @apply flex justify-between items-baseline;
+  @apply pb-4 border-b border-black/5 dark:border-white/5;
+}
+
+.beatmap-info-label {
+  @apply text-xs font-light uppercase tracking-widest;
+  @apply text-gbase-500 dark:text-gbase-500;
+}
+
+.beatmap-info-value {
+  @apply text-lg font-light;
+  @apply text-black dark:text-white;
+  @apply flex items-center gap-2;
+}
+
+/* Leaderboard table */
+.leaderboard-minimal {
+  @apply mt-12 md:mt-16;
+}
+
+.leaderboard-minimal table {
+  @apply w-full;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.leaderboard-minimal thead th {
+  @apply text-xs font-light uppercase tracking-widest;
+  @apply text-gbase-500 dark:text-gbase-500;
+  @apply pb-4 text-left;
+  @apply border-b border-black/5 dark:border-white/5;
+}
+
+.leaderboard-minimal tbody td {
+  @apply py-4 text-sm font-light;
+  @apply border-b border-black/5 dark:border-white/5;
+}
+
+.leaderboard-minimal tbody tr {
+  @apply hover:bg-black/[0.02] dark:hover:bg-white/[0.02];
+  @apply transition-colors duration-200;
+}
+
+/* Score cards for mobile */
+.score-card-minimal {
+  @apply p-4 mb-4;
+  @apply border border-black/5 dark:border-white/5;
+  @apply hover:border-black/10 dark:hover:border-white/10;
+  @apply transition-colors duration-200;
+}
+
+.score-card-header {
+  @apply flex items-center justify-between mb-3;
+}
+
+.score-rank {
+  @apply text-xs font-light uppercase tracking-widest;
+  @apply text-gbase-500 dark:text-gbase-500;
+}
+
+.score-player {
+  @apply text-base font-light;
+}
+
+.score-details {
+  @apply flex items-center gap-4 text-sm font-light;
+  @apply text-gbase-600 dark:text-gbase-400;
+}
+
+/* Mode switcher minimal */
+.mode-switcher-minimal {
+  @apply flex gap-2;
+}
+
+.mode-switcher-minimal button {
+  @apply w-10 h-10 flex items-center justify-center;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply transition-colors duration-200;
+}
+
+.mode-switcher-minimal button.active {
+  @apply bg-black dark:bg-white;
+  @apply border-black dark:border-white;
+}
+
+.mode-switcher-minimal button img {
+  @apply w-6 h-6 opacity-60;
+}
+
+.mode-switcher-minimal button.active img {
+  @apply opacity-100;
+}
+
+/* User card minimal */
+.user-card-minimal {
+  @apply flex items-center gap-3;
+}
+
+.user-avatar-small {
+  @apply w-10 h-10 rounded-sm bg-cover bg-center;
+  @apply border border-black/10 dark:border-white/10;
+}
+
+.user-name-small {
+  @apply text-sm font-light;
+  @apply hover:opacity-60 transition-opacity;
+}
+
+/* Rank badge */
+.rank-badge {
+  @apply inline-flex items-center justify-center;
+  @apply w-8 h-8 text-xs font-light;
+  @apply border border-black/20 dark:border-white/20;
+}
+
+.rank-badge.rank-ssh,
+.rank-badge.rank-ss {
+  @apply bg-yellow-50 dark:bg-yellow-900/20;
+  @apply text-yellow-700 dark:text-yellow-300;
+  @apply border-yellow-200 dark:border-yellow-700;
+}
+
+.rank-badge.rank-sh,
+.rank-badge.rank-s {
+  @apply bg-gray-50 dark:bg-gray-900/20;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply border-gray-200 dark:border-gray-700;
+}
+
+.rank-badge.rank-a {
+  @apply bg-green-50 dark:bg-green-900/20;
+  @apply text-green-700 dark:text-green-300;
+  @apply border-green-200 dark:border-green-700;
+}
+
+/* Ranking system tabs */
+.ranking-system-tabs {
+  @apply flex flex-wrap gap-1 mb-8;
+}
+
+.ranking-system-tab {
+  @apply px-4 py-2 text-xs font-light uppercase tracking-widest;
+  @apply border-b-2 border-transparent;
+  @apply hover:border-black/20 dark:hover:border-white/20;
+  @apply transition-colors duration-200;
+}
+
+.ranking-system-tab.active {
+  @apply border-black dark:border-white;
+}
+
+/* Cover image minimal */
+.beatmap-cover-minimal {
+  @apply w-full aspect-video bg-cover bg-center mb-8;
+  @apply border border-black/5 dark:border-white/5;
+}
+
+/* Download links */
+.download-links-minimal {
+  @apply space-y-2 mt-6;
+}
+
+.download-link {
+  @apply block px-4 py-3 text-sm font-light;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply transition-colors duration-200;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .beatmap-info-grid {
+    @apply grid-cols-1 gap-y-4;
+  }
+  
+  .beatmap-title {
+    @apply text-3xl;
+  }
+  
+  .beatmap-artist {
+    @apply text-xl;
+  }
+}

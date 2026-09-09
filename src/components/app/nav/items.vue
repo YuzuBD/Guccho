@@ -18,102 +18,101 @@ function clearFocus() {
 <template>
   <slot name="start" />
   <li>
-    <nuxt-link-locale :to="{ name: 'leaderboard-mode' }" @click="clearFocus">
-      <icon name="ph:ranking-fill" class="w-5 h-5" size="100%" />
+    <nuxt-link-locale :to="{ name: 'leaderboard-mode' }" @click="clearFocus" class="nav-link">
       {{ t('title.leaderboard') }}
     </nuxt-link-locale>
   </li>
   <li>
-    <nuxt-link-locale :to="{ name: 'clans' }" @click="clearFocus">
-      <icon name="ic:outline-group-work" class="w-5 h-5" size="100%" />
+    <nuxt-link-locale :to="{ name: 'clans' }" @click="clearFocus" class="nav-link">
       {{ t('title.clans') }}
     </nuxt-link-locale>
   </li>
   <li tabindex="0">
-    <details ref="dans">
-      <summary>
-        <icon name="lucide:goal" class="w-5 h-5" size="100%" />
-        [{{ t('global.wip') }}] {{ t('title.dan.dan') }}
+    <details ref="dans" class="nav-dropdown">
+      <summary class="nav-link cursor-pointer">
+        {{ t('title.dan-courses') }}
       </summary>
-      <ul class="right-0 w-64 mt-0">
+      <ul class="dropdown-menu-minimal">
         <li>
-          <nuxt-link-locale :to="{ name: 'dan-list' }" @click="dans?.toggleAttribute('open', false)">
-            <icon name="lucide:goal" class="w-5 h-5" size="100%" />
-            {{ t('title.dan.dans') }}
+          <nuxt-link-locale :to="{ name: 'dan-list' }" @click="clearFocus">
+            {{ t('title.dan-courses') }}
           </nuxt-link-locale>
         </li>
         <li>
-          <nuxt-link-locale :to="{ name: 'dan-course' }" @click="dans?.toggleAttribute('open', false)">
-            <icon name="solar:book-bookmark-broken" class="w-5 h-5" size="100%" />
-            {{ t('title.dan.courses') }}
+          <nuxt-link-locale :to="{ name: 'dan-player' }" @click="clearFocus">
+            {{ t('title.dan-players') }}
           </nuxt-link-locale>
         </li>
-        <template v-if="session.user && session.role.beatmapNominator">
-          <li>
-            <nuxt-link-locale :to="{ name: 'dan-course-manage' }" @click="dans?.toggleAttribute('open', false)">
-              <icon name="tabler:bookmark-edit" class="w-5 h-5" size="100%" />
-              {{ t('title.dan.manage') }}
-            </nuxt-link-locale>
-          </li>
-          <li>
-            <nuxt-link-locale :to="{ name: 'dan-course-new' }" @click="dans?.toggleAttribute('open', false)">
-              <icon name="tabler:book-upload" class="w-5 h-5" size="100%" />
-              {{ t('title.dan.create-course') }}
-            </nuxt-link-locale>
-          </li>
-          <li>
-            <nuxt-link-locale :to="{ name: 'dan-compose' }" @click="dans?.toggleAttribute('open', false)">
-              <icon name="tabler:book-upload" class="w-5 h-5" size="100%" />
-              {{ t('title.dan.compose') }}
-            </nuxt-link-locale>
-          </li>
-        </template>
+        <li v-if="session.loggedIn">
+          <nuxt-link-locale :to="{ name: 'dan-compose' }" @click="clearFocus">
+            {{ t('title.compose-dan') }}
+          </nuxt-link-locale>
+        </li>
       </ul>
     </details>
   </li>
   <li v-if="session.user && showAdminPanel(session.user.roles)">
-    <nuxt-link-locale :to="{ name: 'status' }" @click="clearFocus">
-      <icon name="material-symbols:signal-cellular-alt-rounded" class="w-5 h-5" size="100%" />
+    <nuxt-link-locale :to="{ name: 'status' }" @click="clearFocus" class="nav-link">
       {{ t('title.status') }}
     </nuxt-link-locale>
   </li>
   <li tabindex="0">
-    <details ref="langSw">
-      <summary><icon name="tabler:world" class="w-5 h-5" />{{ localeProperties.name }}</summary>
-      <ul class="right-0 w-64 mt-0">
-        <li
-          v-for="l in locales"
-          :key="l.code"
-          :class="{
-            disabled: l.code === locale,
-          }"
-        >
+    <details ref="langSw" class="nav-dropdown">
+      <summary class="nav-link cursor-pointer">
+        {{ localeProperties?.name }}
+      </summary>
+      <ul class="dropdown-menu-minimal">
+        <li v-for="l in locales" :key="l.code">
           <a
-            class="whitespace-nowrap"
-            :class="{
-              active: l.code === locale,
+            class="flex items-center gap-2"
+            @click.prevent="() => {
+              setLocale(l.code)
+              langSw?.removeAttribute('open')
             }"
-            @click="setLocale(l.code), langSw?.toggleAttribute('open', false)"
           >
-            <img
-              :alt="l.name" class="h-6"
-              :src="getFlagURL(l.flag)"
-            > {{ l.name }}
+            <span v-if="locale === l.code" class="w-2 h-2 rounded-full bg-black dark:bg-white" />
+            <span v-else class="w-2 h-2" />
+            {{ l.name }}
           </a>
         </li>
       </ul>
     </details>
   </li>
-  <!-- <li tabindex="0">
-    <a class="justify-between lg:justify-start">
-      Parent
-      <svg class="hidden fill-current lg:block" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" /></svg>
-      <svg class="fill-current lg:hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>
-    </a>
-    <ul class="p-2 m-4 menu bg-base-100">
-      <li><a>Submenu 1</a></li>
-      <li><a>Submenu 2</a></li>
-    </ul>
-  </li>
-  <li><a>Item 3</a></li> -->
 </template>
+
+<style lang="postcss" scoped>
+.nav-link {
+  @apply text-sm font-light tracking-wide uppercase;
+  @apply text-black dark:text-white;
+  @apply hover:opacity-60 transition-opacity duration-200;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+}
+
+.nav-dropdown summary {
+  list-style: none;
+}
+
+.nav-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.dropdown-menu-minimal {
+  @apply absolute mt-2 min-w-[180px] p-2;
+  @apply bg-white dark:bg-[#1a1a1a];
+  @apply border border-black/5 dark:border-white/5;
+  backdrop-filter: blur(20px);
+  
+  li {
+    @apply my-1;
+    
+    a {
+      @apply block px-4 py-2 text-sm font-light;
+      @apply text-black dark:text-white;
+      @apply hover:bg-black/5 dark:hover:bg-white/5;
+      @apply transition-colors duration-200;
+      text-decoration: none;
+    }
+  }
+}
+</style>

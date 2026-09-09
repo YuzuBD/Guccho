@@ -9,11 +9,12 @@ import { convertSingle } from './src/utils/color'
 const cupcake = themes.cupcake
 const dracula = themes.dracula
 const base = {
-  '--rounded-btn': '1rem',
+  '--rounded-btn': '0.25rem',
   '--btn-text-case': 'normal',
-  '--tab-border': '2px',
-  '--tab-radius': '.5rem',
-  '--tw-border-opacity': '0.2',
+  '--tab-border': '1px',
+  '--tab-radius': '0',
+  '--tw-border-opacity': '0.1',
+  '--rounded-box': '0',
 }
 
 const slateHSL = convertSingle(tw.slate, hex.hsl, ([h, s, l]) => `${h} ${s}% ${l}%`)
@@ -31,34 +32,60 @@ const gSlate = {
   '--color-gbase-950': slateHSL[950],
 }
 
+// Minimalist nirnor-inspired theme
+const nirmorMinimal = {
+  ...base,
+  'primary': '#000000',
+  'primary-content': '#ffffff',
+  'secondary': '#1a1a1a',
+  'secondary-content': '#ffffff',
+  'accent': '#333333',
+  'accent-content': '#ffffff',
+  'neutral': '#f5f5f5',
+  'neutral-content': '#000000',
+  'base-50': '#ffffff',
+  'base-100': '#fafafa',
+  'base-200': '#f5f5f5',
+  'base-300': '#e5e5e5',
+  'base-content': '#000000',
+  'info': '#000000',
+  'success': '#000000',
+  'warning': '#000000',
+  'error': '#000000',
+  ...gSlate,
+}
+
+const nirmorMinimalDark = {
+  ...base,
+  'primary': '#ffffff',
+  'primary-content': '#000000',
+  'secondary': '#e5e5e5',
+  'secondary-content': '#000000',
+  'accent': '#cccccc',
+  'accent-content': '#000000',
+  'neutral': '#1a1a1a',
+  'neutral-content': '#ffffff',
+  'base-50': '#0a0a0a',
+  'base-100': '#1a1a1a',
+  'base-200': '#2a2a2a',
+  'base-300': '#3a3a3a',
+  'base-content': '#ffffff',
+  'info': '#ffffff',
+  'success': '#ffffff',
+  'warning': '#ffffff',
+  'error': '#ffffff',
+  ...gSlate,
+}
+
 export const guccho = [
   {
     'guccho-light': {
-      ...cupcake,
-      ...base,
-      'primary': cupcake.secondary,
-      'secondary': cupcake.primary,
-      'neutral': tw.slate[200],
-      'base-50': tw.slate[50],
-      'base-100': tw.slate[100],
-      'base-200': tw.slate[200],
-      'base-300': tw.slate[300],
-      'base-content': tw.slate[900],
-      ...gSlate,
+      ...nirmorMinimal,
     },
   },
   {
     'guccho-dark': {
-      ...dracula,
-      ...base,
-      'primary': colors.wewak[500],
-      'neutral': tw.slate[500],
-      'base-50': tw.slate[950],
-      'base-100': tw.slate[900],
-      'base-200': tw.slate[800],
-      'base-300': tw.slate[700],
-      'base-content': tw.slate[100],
-      ...gSlate,
+      ...nirmorMinimalDark,
     },
   },
 ]

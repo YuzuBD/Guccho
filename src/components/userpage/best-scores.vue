@@ -83,6 +83,7 @@ const {
     },
   }
 })
+
 watch([() => page.user, bpPage], async () => {
   if (!page.user) {
     return
@@ -95,75 +96,28 @@ watch(status, (val) => {
 })
 outStatus.value = status.value
 
-const transition = shallowRef<'left' | 'right'>('left')
-onMounted(() => {
-  const animationDirection = <T extends readonly any[]>(
-    val: T[number],
-    prevVal: T[number],
-    array: T,
-  ) => {
-    const [idx, prevIdx] = [array.indexOf(val), array.indexOf(prevVal)]
-    if (idx === prevIdx) {
-      return
-    }
-    if (idx > prevIdx) {
-      return 'right'
-    }
-    else {
-      return 'left'
-    }
+const transition = computed(() => {
+  if (
+    prevSwitcherState.mode !== page.switcher.mode
+    || prevSwitcherState.ruleset !== page.switcher.ruleset
+    || !switchBetweenScoreRanks()
+  ) {
+    return 'slide'
   }
-
-  // transition direction
-  const arrayMap = {
-    mode: modes,
-    ruleset: rulesets,
-    rankingSystem: leaderboardRankingSystems,
-  } as const
-  const computeAnimateDirection = () => {
-    const sw = page.switcher
-
-    for (const [key, switcherState] of Object.entries(sw)) {
-      const [value, previousValue] = [
-        switcherState,
-        prevSwitcherState[key as keyof typeof prevSwitcherState],
-      ]
-      const direction = animationDirection(
-        value,
-        previousValue,
-        arrayMap[key as keyof typeof prevSwitcherState],
-      )
-      if (!direction) {
-        continue
-      }
-      transition.value = direction
-      break
-    }
-  }
-  watch(page.switcher, (sw) => {
-    if (switchBetweenScoreRanks()) {
-      prevSwitcherState = { ...sw }
-      return
-    }
-    // reset bp page
-    bpPage.value = 0
-    // animate
-    computeAnimateDirection()
-    refreshBP()
-    prevSwitcherState = { ...sw }
-  })
+  return 'none'
 })
-function prevPage(val: Ref<number>) {
-  transition.value = 'left'
-  if (val.value > 0) {
-    val.value -= 1
-  }
+watch(
+  () => page.switcher,
+  () => {
+    prevSwitcherState = { ...page.switcher }
+  },
+)
+
+function nextPage(r: Ref<number>) {
+  r.value++
 }
-function nextPage(val: Ref<number>) {
-  transition.value = 'right'
-  if (val.value < 9) {
-    val.value += 1
-  }
+function prevPage(r: Ref<number>) {
+  r.value--
 }
 
 const prevBp = prevPage.bind(null, bpPage)
@@ -174,76 +128,158 @@ const nextBp = nextPage.bind(null, bpPage)
 
 <i18n lang="yaml">
 en-GB:
-  bp: Best Scores
+  bp: Best Performance
 
 zh-CN:
-  bp: 最好成绩
+  bp: 最佳成绩
 
 fr-FR:
-  bp: Meilleurs Scores
+  bp: Meilleures Performances
 
 de-DE:
-  bp: Beste Ergebnisse
+  bp: Beste Leistung
 </i18n>
 
 <template>
-  <div v-if="bpError">
+  <div v-if="bpError" class="error-message">
     {{ bpError }}
   </div>
   <template v-else-if="page.user">
-    <section v-if="bp?.scores?.length">
-      <div class="card" :class="[pendingBP && 'pointer-events-none']">
-        <div class="flex items-center p-1 two-tone w-100">
-          <icon name="carbon:letter-pp" class="w-1/6" size="2em" />
-          <div class="flex w-2/3">
-            <div class="mx-auto text-3xl font-semibold">
-              {{ t('bp') }}
-            </div>
-          </div>
-        </div>
-        <div
-          class="transition-[filter] transition-opacity duration-200" :class="{
-            'saturate-50 opacity-30': pendingBP,
-          }"
-        >
-          <div class="relative">
-            <transition :name="transition">
-              <ul
-                :key="bp.lastSwitcherStatus.mode
-                  + bp.lastSwitcherStatus.ruleset
-                  + stabilizeScoreRank(bp.lastSwitcherStatus.rankingSystem)
-                  + page.user.id
-                  + bp.page
-                "
-              >
-                <li v-for="i in bp.scores" :key="`bests-${i.id}`" class="score">
-                  <app-score-list-item
-                    :score="i" :mode="bp.lastSwitcherStatus.mode"
-                    :ruleset="bp.lastSwitcherStatus.ruleset" :ranking-system="bp.lastSwitcherStatus.rankingSystem"
-                  />
-                </li>
-              </ul>
-            </transition>
-          </div>
-        </div>
+    <section v-if="bp?.scores?.length" class="scores-section-minimal">
+      <!-- Section Header -->
+      <div class="section-header-minimal">
+        <h2 class="section-title-minimal">{{ t('bp') }}</h2>
       </div>
+
+      <!-- Scores List -->
       <div
-        class="flex w-full mt-1 rounded-lg shadow join bg-gbase-300/30 dark:bg-gbase-700/50"
-        style="--rounded-btn: 1rem"
+        class="scores-list-minimal" 
+        :class="{ 'loading-state': pendingBP }"
       >
-        <button class="join-item btn btn-ghost" :disabled="bpPage === 0" @click="prevBp">
-          «
+        <transition :name="transition">
+          <ul
+            :key="bp.lastSwitcherStatus.mode
+              + bp.lastSwitcherStatus.ruleset
+              + stabilizeScoreRank(bp.lastSwitcherStatus.rankingSystem)
+              + page.user.id
+              + bp.page
+            "
+            class="score-items"
+          >
+            <li v-for="i in bp.scores" :key="`bests-${i.id}`">
+              <app-score-list-item
+                :score="i" 
+                :mode="bp.lastSwitcherStatus.mode"
+                :ruleset="bp.lastSwitcherStatus.ruleset" 
+                :ranking-system="bp.lastSwitcherStatus.rankingSystem"
+              />
+            </li>
+          </ul>
+        </transition>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-minimal">
+        <button 
+          class="pagination-btn" 
+          :disabled="bpPage === 0" 
+          @click="prevBp"
+        >
+          Previous
         </button>
-        <button class="join-item btn btn-ghost grow" @click="refreshBP()">
-          {{ t('page', { page: bpPage + 1 }) }}
+        <button 
+          class="pagination-current" 
+          @click="refreshBP()"
+        >
+          Page {{ bpPage + 1 }}
         </button>
-        <button class="join-item btn btn-ghost" :disabled="bp.scores.length < 10" @click="nextBp">
-          »
+        <button 
+          class="pagination-btn" 
+          :disabled="bp.scores.length < 10" 
+          @click="nextBp"
+        >
+          Next
         </button>
       </div>
     </section>
-    <div v-else-if="!bp?.scores.length && pendingBP">
+    <div v-else-if="!bp?.scores.length && pendingBP" class="loading-message">
       {{ t('loading') }}
     </div>
   </template>
 </template>
+
+<style scoped lang="postcss">
+.error-message,
+.loading-message {
+  @apply py-12 text-center text-sm font-light;
+  @apply text-gbase-500 dark:text-gbase-500;
+}
+
+.scores-section-minimal {
+  @apply py-8 md:py-12;
+}
+
+.section-header-minimal {
+  @apply pb-6 border-b border-black/5 dark:border-white/5;
+}
+
+.section-title-minimal {
+  @apply text-2xl md:text-3xl font-light tracking-tight;
+  @apply text-black dark:text-white;
+}
+
+.scores-list-minimal {
+  @apply transition-opacity duration-200;
+}
+
+.scores-list-minimal.loading-state {
+  @apply opacity-30;
+}
+
+.score-items {
+  @apply space-y-0;
+}
+
+.score-items > li {
+  @apply border-b border-black/5 dark:border-white/5;
+}
+
+.score-items > li:last-child {
+  @apply border-b-0;
+}
+
+.pagination-minimal {
+  @apply flex items-center gap-2 mt-6;
+}
+
+.pagination-btn {
+  @apply px-4 py-2 text-sm font-light;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply disabled:opacity-30 disabled:pointer-events-none;
+  @apply transition-all duration-200;
+}
+
+.pagination-current {
+  @apply flex-1 px-4 py-2 text-sm font-light text-center;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply transition-all duration-200;
+}
+
+/* Transition animations */
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+</style>

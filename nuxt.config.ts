@@ -62,6 +62,7 @@ export default defineNuxtConfig({
     '~/components/content/styles/typography.scss',
     '~/assets/styles/transitions.scss',
     '~/assets/styles/daisyui.scss',
+    '~/assets/styles/beatmap-minimal.scss',
   ],
 
   app: {

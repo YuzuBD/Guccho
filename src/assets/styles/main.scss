@@ -1,13 +1,22 @@
-/* @import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@300;400;500;700;900&display=swap"); */
-/* @import url("https://192960944.r.cdn36.com/chinesefonts2/packages/lxgwwenkai/dist/LXGWWenKai-Bold/result.css"); */
+/* Minimalist nirnor-inspired styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 html {
   scroll-behavior: smooth;
 }
 
-body {
-  @apply bg-gbase-50 dark:bg-gbase-800;
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+body {
+  @apply bg-white dark:bg-[#0a0a0a] text-black dark:text-white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
 body:after {
   content: "";
   position: fixed;
@@ -15,22 +24,63 @@ body:after {
   left: 0;
   right: 0;
   bottom: 0;
-  @apply bg-gradient-to-b from-gbase-50 to-gbase-100/75 dark:from-gbase-800 dark:to-gbase-900 -z-50;
+  @apply -z-50;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(250, 250, 250, 1) 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  body:after {
+    background: linear-gradient(180deg, 
+      rgba(10, 10, 10, 1) 0%, 
+      rgba(20, 20, 20, 1) 100%);
+  }
 }
 
 dialog {
   @apply bg-transparent p-0 m-0 mx-auto;
   &::backdrop {
-    @apply bg-transparent;
+    @apply bg-black/30 dark:bg-black/60 backdrop-blur-sm;
   }
 }
 
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-light tracking-tight;
+  line-height: 1.2;
+}
+
+h1 {
+  @apply text-5xl md:text-7xl lg:text-8xl;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  @apply text-3xl md:text-5xl lg:text-6xl;
+  font-weight: 300;
+}
+
+h3 {
+  @apply text-2xl md:text-3xl lg:text-4xl;
+  font-weight: 400;
+}
+
+p {
+  @apply text-base md:text-lg;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
 .username {
-  @apply text-4xl lg:text-5xl;
+  @apply text-4xl lg:text-5xl font-light tracking-tight;
 }
 
 .g-link-style {
-  @apply underline decoration-sky-500 text-gbase-600 dark:text-gbase-300 hover:text-gbase-500;
+  @apply text-black dark:text-white hover:opacity-60 transition-opacity duration-300;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
 }
 
 .g-link {
@@ -38,39 +88,89 @@ dialog {
   @apply g-link-style;
 }
 
+/* Minimalist button styles */
+.btn-minimal {
+  @apply px-8 py-4 text-sm md:text-base font-light tracking-wide uppercase;
+  @apply border border-black dark:border-white;
+  @apply bg-transparent text-black dark:text-white;
+  @apply hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black;
+  @apply transition-all duration-300;
+  letter-spacing: 0.15em;
+}
+
+.btn-minimal-filled {
+  @apply px-8 py-4 text-sm md:text-base font-light tracking-wide uppercase;
+  @apply bg-black text-white dark:bg-white dark:text-black;
+  @apply hover:opacity-80;
+  @apply transition-all duration-300;
+  letter-spacing: 0.15em;
+}
+
+/* Layout containers */
+.custom-container {
+  @apply max-w-7xl mx-auto px-6 md:px-12 lg:px-16;
+}
+
+.section-spacing {
+  @apply py-20 md:py-32 lg:py-40;
+}
+
+.minimal-section {
+  @apply min-h-screen flex items-center justify-center;
+  @apply section-spacing;
+}
+
+/* Scroll reveal animations */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade in on load */
+.fade-in {
+  animation: fadeIn 1.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth line separator */
+.line-separator {
+  @apply w-full h-px bg-black/10 dark:bg-white/10 my-16;
+}
+
 .two-tone {
-  @apply z-[1] sticky top-[3.625rem] mb-1 mx-2 lg:mx-0;
+  @apply z-[1] sticky top-[4rem] mb-1 mx-2 lg:mx-0;
   &::before {
     @apply absolute top-0 left-0 right-0 bottom-0 -z-10;
-    @apply rounded-lg shadow-md;
+    @apply shadow-sm;
     content: "";
-    background: linear-gradient(
-      110deg,
-      theme("colors.gbase.50"),
-      theme("colors.gbase.100") 16.6%,
-      theme("colors.gbase.200") 16.7%,
-      theme("colors.gbase.200") 83.3%,
-      theme("colors.gbase.100") 83.4%,
-      theme("colors.gbase.50")
-    );
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
     @media (prefers-color-scheme: dark) {
-      background: linear-gradient(
-        110deg,
-        theme("colors.gbase.800"),
-        theme("colors.gbase.700") 16.6%,
-        theme("colors.gbase.600") 16.7%,
-        theme("colors.gbase.600") 83.3%,
-        theme("colors.gbase.700") 83.4%,
-        theme("colors.gbase.800")
-      );
+      background: rgba(26, 26, 26, 0.8);
     }
   }
 }
 
 .hover-floating {
-  @apply transition-transform;
+  @apply transition-transform duration-300;
   &:hover {
-    transform: translateY(-3%);
+    transform: translateY(-8px);
   }
 }
 
@@ -82,19 +182,19 @@ dialog {
   }
 }
 
-.custom-container {
-  @apply max-w-7xl lg:px-4;
-}
-
 .striped {
-  @apply px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6;
-  &:nth-child(odd) {
-    @apply bg-gbase-100 dark:bg-gbase-800;
+  @apply px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  
+  @media (prefers-color-scheme: dark) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 }
+
 .striped-dt {
-  @apply text-sm font-medium text-gbase-500;
+  @apply text-sm font-light text-gbase-500 uppercase tracking-wider;
 }
+
 .striped-text {
   @apply mt-1 text-sm text-gbase-900 dark:text-gbase-100 sm:col-span-2 sm:mt-0;
 }
@@ -120,4 +220,37 @@ dialog {
 .color-theme-light-invert {
   filter: invert(100%);
   @apply dark:[filter:invert(0)];
+}
+
+/* Grid system for minimal layouts */
+.minimal-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16;
+}
+
+/* Text highlight effect */
+.text-highlight {
+  @apply relative inline-block;
+  
+  &::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-1 bg-black dark:bg-white;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease-out;
+  }
+  
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Centered text blocks */
+.text-block-center {
+  @apply max-w-3xl mx-auto text-center;
+}
+
+/* Large display text */
+.display-text {
+  @apply text-6xl md:text-8xl lg:text-9xl font-extralight tracking-tighter;
+  line-height: 0.9;
 }
