@@ -61,6 +61,13 @@ watch(status, (val) => {
   outStatus.value = val
 })
 outStatus.value = status.value
+
+function nextPage() {
+  pagination.value++
+}
+function prevPage() {
+  pagination.value--
+}
 </script>
 
 <i18n src="./scores.base.yaml" lang="yaml" />
@@ -169,6 +176,30 @@ zh-CN:
           </li>
         </ul>
       </div>
+
+      <!-- Pagination -->
+      <div class="pagination-minimal">
+        <button
+          class="pagination-btn"
+          :disabled="pagination === 0"
+          @click="prevPage"
+        >
+          Previous
+        </button>
+        <button
+          class="pagination-current"
+          @click="refresh()"
+        >
+          Page {{ pagination + 1 }}
+        </button>
+        <button
+          class="pagination-btn"
+          :disabled="recent.scores.length < 10"
+          @click="nextPage"
+        >
+          Next
+        </button>
+      </div>
     </section>
     <div v-else-if="!recent?.scores.length && pending" class="loading-message">
       {{ t('loading') }}
@@ -239,6 +270,25 @@ zh-CN:
 
 .score-items > li:last-child {
   @apply border-b-0;
+}
+
+.pagination-minimal {
+  @apply flex items-center gap-2 mt-6;
+}
+
+.pagination-btn {
+  @apply px-4 py-2 text-sm font-light;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply disabled:opacity-30 disabled:pointer-events-none;
+  @apply transition-all duration-200;
+}
+
+.pagination-current {
+  @apply flex-1 px-4 py-2 text-sm font-light text-center;
+  @apply border border-black/10 dark:border-white/10;
+  @apply hover:bg-black/5 dark:hover:bg-white/5;
+  @apply transition-all duration-200;
 }
 
 .folded-scores {

@@ -235,5 +235,9 @@ export abstract class UserProvider<Id, ScoreId> extends IdTransformable {
     Mode extends ActiveMode,
     Ruleset extends ActiveRuleset,
     RankingSystem extends LeaderboardRankingSystem,
-  >(query: UserProvider.BaseQuery<Id, Mode, Ruleset, RankingSystem> & { limit?: number }): Promise<UserProvider.RecentScoresResult<Id, ScoreId>[]>
+  >(query: UserProvider.BaseQuery<Id, Mode, Ruleset, RankingSystem> & {
+    limit?: number
+    page?: number
+    perPage?: number
+  }): Promise<UserProvider.RecentScoresResult<Id, ScoreId>[]>
 }

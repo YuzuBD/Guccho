@@ -425,7 +425,12 @@ class DBUserProvider extends Base<Id, ScoreId> implements Base<Id, ScoreId> {
     }
   }
 
-  async getRecentScores<Mode extends ActiveMode, Ruleset extends ActiveRuleset, RankingSystem extends LeaderboardRankingSystem>(query: Base.BaseQuery<number, Mode, Ruleset, RankingSystem> & { limit?: number }): Promise<Base.RecentScoresResult<number, bigint>[]> {
+  async getRecentScores<Mode extends ActiveMode, Ruleset extends ActiveRuleset, RankingSystem extends LeaderboardRankingSystem>(query: Base.BaseQuery<number, Mode, Ruleset, RankingSystem> & { limit?: number; page?: number; perPage?: number }): Promise<Base.RecentScoresResult<number, bigint>[]> {
+    const perPage = query.perPage ?? query.limit ?? 10
+    const page = query.page ?? 0
+    // same-day plays of one beatmap fold into a single entry, so pull a raw
+    // window that grows with the page to keep earlier pages stable
+    const rawWindow = Math.min(500, perPage * (page + 1) * 2)
     const recentScores = this.drizzle.$with('recent_scores').as(
       this.drizzle
         .select({
@@ -452,7 +457,7 @@ class DBUserProvider extends Base<Id, ScoreId> implements Base<Id, ScoreId> {
         .orderBy(
           desc(schema.scores.id)
         )
-        .limit(100)
+        .limit(rawWindow)
     )
 
     try {
@@ -472,7 +477,8 @@ class DBUserProvider extends Base<Id, ScoreId> implements Base<Id, ScoreId> {
         .orderBy(
           sql`DATE_FORMAT(${recentScores.score.playTime}, '%Y-%m-%d') DESC`
         )
-        .limit(query.limit ?? 10)
+        .limit(perPage)
+        .offset(page * perPage)
 
       return r.map((i) => {
         const source = {
