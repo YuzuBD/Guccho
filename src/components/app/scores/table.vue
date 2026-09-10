@@ -138,6 +138,7 @@ de-DE:
         </tr>
       </template>
     </tbody>
+  </table>
 </template>
 
 <style scoped lang="postcss">
@@ -155,10 +156,6 @@ de-DE:
   @apply text-gbase-600 dark:text-gbase-400;
   @apply border-b border-black/10 dark:border-white/10;
   @apply text-left;
-}
-
-.scores-table-modern thead tr th.text-right {
-  @apply text-right;
 }
 
 .scores-table-modern tbody tr {
@@ -180,14 +177,11 @@ de-DE:
   @apply text-sm;
 }
 
-.scores-table-modern tbody td.text-right {
-  @apply text-right;
-}
-
 /* Rank column */
 .scores-table-modern tbody td:first-child {
-  @apply font-mono font-semibold;
+  @apply font-semibold;
   @apply text-gbase-700 dark:text-gbase-300;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* Player column with avatar */
@@ -203,12 +197,13 @@ de-DE:
 .scores-table-modern .link {
   @apply inline-flex items-center gap-1.5;
   @apply py-1.5 px-3 rounded-lg;
-  @apply text-xs font-medium;
+  @apply font-medium;
   @apply bg-black/5 dark:bg-white/5;
   @apply transition-all duration-200;
   @apply hover:bg-black/10 dark:hover:bg-white/10;
   @apply hover:shadow-sm;
   @apply no-underline;
+  font-size: 0.75rem;
 }
 
 .scores-table-modern .link:first-child {
@@ -221,9 +216,15 @@ de-DE:
   @apply flex-wrap;
 }
 
-/* Date column */
-.scores-table-modern tbody td.font-mono {
-  @apply text-xs;
+/* Score and date columns with monospace font */
+.scores-table-modern tbody td:nth-child(4),
+.scores-table-modern tbody td:nth-child(5),
+.scores-table-modern tbody td:nth-child(6) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.scores-table-modern tbody td:nth-child(6) {
+  font-size: 0.75rem;
   @apply text-gbase-600 dark:text-gbase-400;
 }
 </style>
