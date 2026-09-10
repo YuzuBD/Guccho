@@ -196,11 +196,6 @@ en-GB:
     od: OD
     hp-drain: HP Drain
     duration: Duration
-    hit-objects: Hit Objects
-    hit-object:
-      circles: circles
-      sliders: sliders
-      spinners: spinners
 zh-CN:
   beatmapset:
     placement: "曲名:{title} \n 艺术家:{artist}"
@@ -217,11 +212,6 @@ zh-CN:
     od: 准度要求
     hp-drain: 掉血速度
     duration: 长度
-    hit-objects: 物件统计
-    hit-object:
-      circles: 圆圈
-      sliders: 滑条
-      spinners: 转盘
 fr-FR:
   beatmapset:
     placement: '{title} par {artist}'
@@ -238,11 +228,6 @@ fr-FR:
     od: Précision
     hp-drain: Drain de santé
     duration: Durée
-    hit-objects: Hit Objects
-    hit-object:
-      circles: cercles
-      sliders: sliders
-      spinners: spinners
 
 de-DE:
   beatmapset:
@@ -260,11 +245,6 @@ de-DE:
     od: OD
     hp-drain: HP-Drain
     duration: Dauer
-    hit-objects: Hit-Objekte
-    hit-object:
-      circles: Circles
-      sliders: Sliders
-      spinners: Spinner
 </i18n>
 
 <template>
@@ -534,41 +514,6 @@ de-DE:
                   <span>{{ selectedMap.properties.totalLength }} seconds</span>
                 </dd>
               </div>
-              <div class="striped">
-                <dt class="text-sm font-medium text-gbase-500">
-                  {{ t("beatmapset.hit-objects") }}
-                </dt>
-                <dd class="striped-text">
-                  <span class="flex gap-1">
-                    <img
-                      src="~/assets/icons/circles.png"
-                      alt=""
-                      class="w-5 color-theme-light-invert"
-                    >
-                    <span>
-                      {{ selectedMap.properties.count.circles }}
-                      {{ t("beatmapset.hit-object.circles") }},</span>
-                  </span>
-                  <span class="flex gap-1">
-                    <img
-                      src="~/assets/icons/sliders.png"
-                      alt=""
-                      class="w-5 color-theme-light-invert"
-                    >
-                    <span>{{ selectedMap.properties.count.sliders }}
-                      {{ t("beatmapset.hit-object.sliders") }},</span>
-                  </span>
-                  <span class="flex gap-1">
-                    <img
-                      src="~/assets/icons/spinners.png"
-                      alt=""
-                      class="w-5 color-theme-light-invert"
-                    >
-                    <span>{{ selectedMap.properties.count.spinners }}
-                      {{ t("beatmapset.hit-object.spinners") }}</span>
-                  </span>
-                </dd>
-              </div>
             </dl>
           </div>
           
@@ -628,10 +573,11 @@ de-DE:
           '!rounded-tl-none !rounded-tr-none': scoreRS?.rankingSystems[0] === switcher.rankingSystem,
         }"
       >
-        <app-scores-card-list
+        <app-scores-table
           v-if="leaderboard" :scores="leaderboard" :ranking-system="switcher.rankingSystem"
           class="transition-opacity opacity-100 transition-filter"
           :class="{
+            'clear-rounded-tl': scoreRS?.rankingSystems[0] === switcher.rankingSystem,
             'opacity-30 saturate-50 blur-md': pendingLeaderboard,
           }"
         />
@@ -931,8 +877,13 @@ de-DE:
 }
 
 /* Difficulty tabs enhancement */
+.tabs-bordered {
+  /* daisyUI defaults to flex-end, which drops shorter tabs below the strip baseline */
+  align-items: center !important;
+}
+
 .tabs-bordered .tab {
-  @apply px-6 py-2.5 rounded-full;
+  @apply px-6 rounded-full;
   @apply bg-white/10 backdrop-blur-sm;
   @apply border border-white/20;
   @apply text-white/80 font-light text-sm text-center;
@@ -940,6 +891,11 @@ de-DE:
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  /* fixed 2rem daisyUI height + vertical padding squeezed the line box off-center */
+  height: auto !important;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  line-height: 1.25;
   white-space: nowrap;
   min-width: fit-content;
   max-width: 200px;
