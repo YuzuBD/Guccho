@@ -864,6 +864,15 @@ de-DE:
   @apply text-gbase-600 dark:text-gbase-400;
 }
 
+/* Ranking System Switcher Tabs */
+.tabs-lifted .tab {
+  @apply rounded-t-lg;
+}
+
+.tabs-lifted .tab-active {
+  @apply rounded-t-lg;
+}
+
 .stats-grid .striped dd {
   @apply flex items-center gap-2;
   @apply text-base font-mono;
