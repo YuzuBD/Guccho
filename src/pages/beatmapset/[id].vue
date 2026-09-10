@@ -628,11 +628,10 @@ de-DE:
           '!rounded-tl-none !rounded-tr-none': scoreRS?.rankingSystems[0] === switcher.rankingSystem,
         }"
       >
-        <app-scores-table
+        <app-scores-card-list
           v-if="leaderboard" :scores="leaderboard" :ranking-system="switcher.rankingSystem"
           class="transition-opacity opacity-100 transition-filter"
           :class="{
-            'clear-rounded-tl': scoreRS?.rankingSystems[0] === switcher.rankingSystem,
             'opacity-30 saturate-50 blur-md': pendingLeaderboard,
           }"
         />
