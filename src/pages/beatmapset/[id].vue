@@ -799,16 +799,22 @@ de-DE:
 
 .stats-grid {
   @apply grid grid-cols-1 md:grid-cols-2 gap-px;
-  @apply bg-black/5 dark:bg-white/5;
+  @apply bg-gradient-to-br from-black/10 via-black/5 to-transparent;
+  @apply dark:bg-gradient-to-br dark:from-white/10 dark:via-white/5 dark:to-transparent;
   @apply rounded-xl overflow-hidden;
+  @apply shadow-sm;
 }
 
 .stats-grid .striped {
-  @apply bg-white dark:bg-gbase-900;
-  @apply p-4;
+  @apply bg-white/95 dark:bg-gbase-900/95;
+  @apply backdrop-blur-sm;
+  @apply p-5;
   @apply flex items-center justify-between;
-  @apply transition-colors duration-200;
-  @apply hover:bg-black/[0.02] dark:hover:bg-white/[0.02];
+  @apply transition-all duration-300;
+  @apply hover:bg-blue-50/50 dark:hover:bg-blue-950/20;
+  @apply hover:shadow-sm;
+  @apply border-l-2 border-transparent;
+  @apply hover:border-l-blue-500/50;
 }
 
 /* Downloads Toggle Button */
@@ -860,9 +866,10 @@ de-DE:
 }
 
 .stats-grid .striped dt {
-  @apply text-sm font-medium;
-  @apply text-gbase-600 dark:text-gbase-400;
+  @apply text-xs uppercase tracking-wider font-semibold;
+  @apply text-gbase-500 dark:text-gbase-500;
 }
+
 
 /* Ranking System Switcher Tabs */
 .tabs-lifted .tab {
@@ -882,8 +889,8 @@ de-DE:
 
 .stats-grid .striped dd {
   @apply flex items-center gap-2;
-  @apply text-base font-mono;
-  @apply text-gbase-900 dark:text-gbase-100;
+  @apply text-lg font-semibold;
+  @apply text-gbase-800 dark:text-gbase-100;
 }
 /* Stats section spacing */
 .card dl {
