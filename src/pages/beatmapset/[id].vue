@@ -625,8 +625,7 @@ de-DE:
       />
       <div
         class="relative overflow-x-auto rounded-lg bg-base-100" :class="{
-          '!rounded-tl-none': scoreRS?.rankingSystems[0] === switcher.rankingSystem,
-          '!rounded-tr-none': scoreRS?.rankingSystems.at(-1) === switcher.rankingSystem,
+          '!rounded-tl-none !rounded-tr-none': scoreRS?.rankingSystems[0] === switcher.rankingSystem,
         }"
       >
         <app-scores-table
