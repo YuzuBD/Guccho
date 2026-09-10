@@ -1,222 +1,180 @@
-/* Additional minimal styles for beatmap pages */
+/* Beatmapset Page - Minimal Design */
 
-/* Beatmap header */
-.beatmap-header-minimal {
-  @apply py-12 md:py-16 border-b border-black/5 dark:border-white/5;
+/* Hero Section Enhancement */
+.beatmapset-hero {
+  @apply relative py-16 md:py-24;
+  min-height: 50vh;
 }
 
-.beatmap-title {
-  @apply text-4xl md:text-5xl font-light tracking-tight mb-2;
+/* Header Typography */
+.beatmapset-title {
+  @apply text-4xl md:text-6xl font-bold tracking-tight;
+  @apply text-white drop-shadow-lg;
+  @apply mb-4;
 }
 
-.beatmap-artist {
-  @apply text-2xl md:text-3xl font-light text-gbase-600 dark:text-gbase-400;
+.beatmapset-artist {
+  @apply text-xl md:text-3xl font-light;
+  @apply text-white/90 drop-shadow-md;
 }
 
-/* Difficulty tabs */
-.difficulty-tabs {
-  @apply flex flex-wrap gap-2 mt-8;
+/* Difficulty Tabs - Pill Style */
+.beatmap-tabs {
+  @apply flex flex-wrap gap-2 justify-center mt-8;
 }
 
-.difficulty-tab {
-  @apply px-4 py-2 text-sm font-light tracking-wide;
-  @apply border border-black/10 dark:border-white/10;
-  @apply hover:bg-black/5 dark:hover:bg-white/5;
-  @apply transition-colors duration-200;
+.beatmap-tab {
+  @apply px-6 py-2.5 rounded-full;
+  @apply bg-white/10 backdrop-blur-sm;
+  @apply border border-white/20;
+  @apply text-white/80 font-light text-sm;
+  @apply transition-all duration-300;
+  @apply hover:bg-white/20 hover:text-white hover:scale-105;
+  @apply cursor-pointer;
 }
 
-.difficulty-tab.active {
-  @apply bg-black text-white dark:bg-white dark:text-black;
-  @apply border-black dark:border-white;
+.beatmap-tab.active {
+  @apply bg-white text-black font-medium;
+  @apply shadow-lg scale-105;
 }
 
-/* Beatmap info grid */
-.beatmap-info-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 py-12 md:py-16;
+/* Info Card */
+.beatmap-info-card {
+  @apply mt-8 rounded-2xl shadow-2xl overflow-hidden;
+  @apply bg-white dark:bg-gbase-900;
+  animation: cardSlideUp 0.6s ease-out;
 }
 
-.beatmap-info-item {
-  @apply flex justify-between items-baseline;
-  @apply pb-4 border-b border-black/5 dark:border-white/5;
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.beatmap-info-label {
-  @apply text-xs font-light uppercase tracking-widest;
-  @apply text-gbase-500 dark:text-gbase-500;
+/* Cover Image Section */
+.beatmap-cover {
+  @apply p-6 md:p-8;
 }
 
-.beatmap-info-value {
-  @apply text-lg font-light;
-  @apply text-black dark:text-white;
+.beatmap-cover img {
+  @apply w-full rounded-xl shadow-lg;
+  @apply transition-transform duration-300;
+}
+
+.beatmap-cover img:hover {
+  @apply scale-105;
+}
+
+/* Stats Section */
+.beatmap-stats {
+  @apply grid grid-cols-1 md:grid-cols-2;
+}
+
+.stat-row {
+  @apply flex items-center justify-between;
+  @apply py-4 px-6;
+  @apply border-b border-black/5 dark:border-white/5;
+  @apply transition-all duration-200;
+}
+
+.stat-row:hover {
+  @apply bg-black/[0.02] dark:bg-white/[0.02];
+}
+
+.stat-row:nth-child(4n+1),
+.stat-row:nth-child(4n+2) {
+  @apply bg-black/[0.01] dark:bg-white/[0.01];
+}
+
+.stat-label {
+  @apply text-sm font-medium uppercase tracking-wide;
+  @apply text-gbase-500 dark:text-gbase-400;
+}
+
+.stat-value {
   @apply flex items-center gap-2;
+  @apply text-base font-mono;
+  @apply text-gbase-900 dark:text-gbase-100;
 }
 
-/* Leaderboard table */
-.leaderboard-minimal {
-  @apply mt-12 md:mt-16;
+.stat-icon {
+  @apply w-5 h-5 opacity-60;
 }
 
-.leaderboard-minimal table {
-  @apply w-full;
-  border-collapse: separate;
-  border-spacing: 0;
+/* Links Section */
+.beatmap-links {
+  @apply mt-6 space-y-4;
 }
 
-.leaderboard-minimal thead th {
-  @apply text-xs font-light uppercase tracking-widest;
-  @apply text-gbase-500 dark:text-gbase-500;
-  @apply pb-4 text-left;
-  @apply border-b border-black/5 dark:border-white/5;
+.beatmap-links h3 {
+  @apply text-xs uppercase tracking-wider font-semibold;
+  @apply text-gbase-500 dark:text-gbase-400 mb-2;
 }
 
-.leaderboard-minimal tbody td {
-  @apply py-4 text-sm font-light;
-  @apply border-b border-black/5 dark:border-white/5;
-}
-
-.leaderboard-minimal tbody tr {
-  @apply hover:bg-black/[0.02] dark:hover:bg-white/[0.02];
-  @apply transition-colors duration-200;
-}
-
-/* Score cards for mobile */
-.score-card-minimal {
-  @apply p-4 mb-4;
-  @apply border border-black/5 dark:border-white/5;
-  @apply hover:border-black/10 dark:hover:border-white/10;
-  @apply transition-colors duration-200;
-}
-
-.score-card-header {
-  @apply flex items-center justify-between mb-3;
-}
-
-.score-rank {
-  @apply text-xs font-light uppercase tracking-widest;
-  @apply text-gbase-500 dark:text-gbase-500;
-}
-
-.score-player {
-  @apply text-base font-light;
-}
-
-.score-details {
-  @apply flex items-center gap-4 text-sm font-light;
-  @apply text-gbase-600 dark:text-gbase-400;
-}
-
-/* Mode switcher minimal */
-.mode-switcher-minimal {
-  @apply flex gap-2;
-}
-
-.mode-switcher-minimal button {
-  @apply w-10 h-10 flex items-center justify-center;
-  @apply border border-black/10 dark:border-white/10;
-  @apply hover:bg-black/5 dark:hover:bg-white/5;
-  @apply transition-colors duration-200;
-}
-
-.mode-switcher-minimal button.active {
-  @apply bg-black dark:bg-white;
-  @apply border-black dark:border-white;
-}
-
-.mode-switcher-minimal button img {
-  @apply w-6 h-6 opacity-60;
-}
-
-.mode-switcher-minimal button.active img {
-  @apply opacity-100;
-}
-
-/* User card minimal */
-.user-card-minimal {
-  @apply flex items-center gap-3;
-}
-
-.user-avatar-small {
-  @apply w-10 h-10 rounded-sm bg-cover bg-center;
-  @apply border border-black/10 dark:border-white/10;
-}
-
-.user-name-small {
+.beatmap-links a {
+  @apply block py-2.5 px-4 rounded-lg;
   @apply text-sm font-light;
-  @apply hover:opacity-60 transition-opacity;
+  @apply bg-black/[0.02] dark:bg-white/[0.02];
+  @apply transition-all duration-200;
 }
 
-/* Rank badge */
-.rank-badge {
-  @apply inline-flex items-center justify-center;
-  @apply w-8 h-8 text-xs font-light;
-  @apply border border-black/20 dark:border-white/20;
+.beatmap-links a:hover {
+  @apply bg-black/[0.05] dark:bg-white/[0.05];
+  @apply translate-x-1 shadow-sm;
 }
 
-.rank-badge.rank-ssh,
-.rank-badge.rank-ss {
-  @apply bg-yellow-50 dark:bg-yellow-900/20;
-  @apply text-yellow-700 dark:text-yellow-300;
-  @apply border-yellow-200 dark:border-yellow-700;
+.beatmap-links a.primary {
+  @apply bg-blue-500/10 text-blue-600 dark:text-blue-400;
+  @apply font-medium;
 }
 
-.rank-badge.rank-sh,
-.rank-badge.rank-s {
-  @apply bg-gray-50 dark:bg-gray-900/20;
-  @apply text-gray-700 dark:text-gray-300;
-  @apply border-gray-200 dark:border-gray-700;
+.beatmap-links a.primary:hover {
+  @apply bg-blue-500/20;
 }
 
-.rank-badge.rank-a {
-  @apply bg-green-50 dark:bg-green-900/20;
-  @apply text-green-700 dark:text-green-300;
-  @apply border-green-200 dark:border-green-700;
+/* Mode Switcher */
+.mode-switcher {
+  @apply flex items-center gap-4 p-6;
+  @apply border-b border-black/5 dark:border-white/5;
 }
 
-/* Ranking system tabs */
-.ranking-system-tabs {
-  @apply flex flex-wrap gap-1 mb-8;
+.mode-icon {
+  @apply w-8 h-8 opacity-40;
+  @apply transition-all duration-300;
+  @apply hover:opacity-70 cursor-pointer;
 }
 
-.ranking-system-tab {
-  @apply px-4 py-2 text-xs font-light uppercase tracking-widest;
-  @apply border-b-2 border-transparent;
-  @apply hover:border-black/20 dark:hover:border-white/20;
-  @apply transition-colors duration-200;
+.mode-icon.active {
+  @apply opacity-100 scale-110;
 }
 
-.ranking-system-tab.active {
-  @apply border-black dark:border-white;
+/* Leaderboard */
+.beatmap-leaderboard {
+  @apply mt-8 rounded-xl shadow-lg overflow-hidden;
+  animation: cardSlideUp 0.6s ease-out 0.2s backwards;
 }
 
-/* Cover image minimal */
-.beatmap-cover-minimal {
-  @apply w-full aspect-video bg-cover bg-center mb-8;
-  @apply border border-black/5 dark:border-white/5;
-}
-
-/* Download links */
-.download-links-minimal {
-  @apply space-y-2 mt-6;
-}
-
-.download-link {
-  @apply block px-4 py-3 text-sm font-light;
-  @apply border border-black/10 dark:border-white/10;
-  @apply hover:bg-black/5 dark:hover:bg-white/5;
-  @apply transition-colors duration-200;
-}
-
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
-  .beatmap-info-grid {
-    @apply grid-cols-1 gap-y-4;
+  .beatmapset-hero {
+    @apply py-12;
+    min-height: 40vh;
   }
   
-  .beatmap-title {
+  .beatmapset-title {
     @apply text-3xl;
   }
   
-  .beatmap-artist {
-    @apply text-xl;
+  .beatmapset-artist {
+    @apply text-lg;
+  }
+  
+  .beatmap-stats {
+    @apply grid-cols-1;
   }
 }

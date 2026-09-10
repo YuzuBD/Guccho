@@ -120,14 +120,15 @@ function clearFocus() {
 
 <style lang="postcss">
 .navbar-container {
-  @apply bg-white/80 dark:bg-[#0a0a0a]/80;
-  backdrop-filter: blur(20px);
+  @apply bg-transparent;
+  backdrop-filter: blur(30px) saturate(1.2);
   border-bottom: 1px solid transparent;
 }
 
 .navbar-container.detached {
-  @apply bg-white/95 dark:bg-[#0a0a0a]/95;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  @apply bg-white/5 dark:bg-black/20;
+  backdrop-filter: blur(40px) saturate(1.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {

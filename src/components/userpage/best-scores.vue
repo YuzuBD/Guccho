@@ -237,11 +237,36 @@ de-DE:
 }
 
 .score-items {
-  @apply space-y-0;
+  @apply space-y-3 md:space-y-4;
 }
 
 .score-items > li {
+  @apply py-3 md:py-4;
   @apply border-b border-black/5 dark:border-white/5;
+  @apply rounded-lg;
+  @apply transition-all duration-300;
+  
+  /* Staggered fade-in animation */
+  animation: scoreSlideIn 0.4s ease-out backwards;
+}
+
+/* Stagger delay for each item */
+.score-items > li:nth-child(1) { animation-delay: 0.05s; }
+.score-items > li:nth-child(2) { animation-delay: 0.1s; }
+.score-items > li:nth-child(3) { animation-delay: 0.15s; }
+.score-items > li:nth-child(4) { animation-delay: 0.2s; }
+.score-items > li:nth-child(5) { animation-delay: 0.25s; }
+.score-items > li:nth-child(6) { animation-delay: 0.3s; }
+.score-items > li:nth-child(7) { animation-delay: 0.35s; }
+.score-items > li:nth-child(8) { animation-delay: 0.4s; }
+.score-items > li:nth-child(9) { animation-delay: 0.45s; }
+.score-items > li:nth-child(10) { animation-delay: 0.5s; }
+
+/* Hover effect */
+.score-items > li:hover {
+  @apply bg-black/[0.02] dark:bg-white/[0.02];
+  @apply shadow-sm;
+  transform: translateX(4px);
 }
 
 .score-items > li:last-child {
@@ -281,5 +306,16 @@ de-DE:
 .slide-leave-to {
   opacity: 0;
   transform: translateX(-20px);
+}
+/* Score item slide-in animation */
+@keyframes scoreSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

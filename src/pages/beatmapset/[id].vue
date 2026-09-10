@@ -18,6 +18,7 @@ const { t } = useI18n()
 
 const { data: beatmapset, error } = await app.$client.map.beatmapset.useQuery({ id: route.params.id.toString() })
 const votePending = shallowRef(false)
+const showDownloads = ref(false)
 
 const queryBeatmap = route.query.beatmap?.toString()
 
@@ -280,36 +281,28 @@ de-DE:
     ]"
   >
     <div class="container mx-auto custom-container">
-      <div class="flex-wrap header-with-maps">
-        <i18n-t
-          keypath="beatmapset.placement"
-          tag="p"
-          class="text-lg font-light"
-        >
-          <template #title>
-            <span
-              class="z-10 text-2xl font-bold text-center sm:text-left lg:whitespace-nowrap"
-            >
-              {{ beatmapset.meta.intl.title }}
-            </span>
-          </template>
-          <template #artist>
-            <span class="text-xl font-semibold">
-              {{ beatmapset.meta.intl.artist }}
-            </span>
-          </template>
-        </i18n-t>
+      <div class="header-with-maps">
+        <!-- Title and Artist -->
+        <div class="flex flex-col gap-4">
+          <h1 class="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg">
+            {{ beatmapset.meta.intl.title }}
+          </h1>
+          <p class="text-xl md:text-3xl font-light opacity-90 drop-shadow-md">
+            {{ beatmapset.meta.intl.artist }}
+          </p>
+        </div>
+        
+        <!-- Difficulty Tabs -->
         <t-tabs
           v-model="selectedMapMd5"
           size="md"
-          class="flex flex-wrap self-end mx-4 bg-transparent tabs-bordered"
+          class="tabs-bordered"
           @update:model-value="update"
         >
           <t-tab
             v-for="bm in beatmapset.beatmaps"
             :key="bm.md5"
             :value="bm.md5"
-            class="whitespace-nowrap grow"
           >
             {{ bm.version }}
           </t-tab>
@@ -317,7 +310,7 @@ de-DE:
       </div>
       <div
         v-if="selectedMap"
-        class="overflow-hidden card bg-gbase-200 dark:bg-gbase-900"
+        class="card bg-white dark:bg-gbase-900 rounded-2xl shadow-2xl overflow-hidden mt-8"
       >
         <div class="relative flex flex-col items-center m-2 md:flex-row">
           <t-tabs
@@ -355,49 +348,58 @@ de-DE:
             </template>
           </t-tabs>
         </div>
-        <div class="flex flex-col md:flex-row">
-          <div class="w-full md:w-1/3 grow">
-            <div class="relative p-4 text-center md:p-3">
-              <img
-                class="mx-auto shadow-md rounded-xl min-w-1/2"
-                :src="beatmapset.assets['list@2x']"
-                :alt="selectedMap.version"
-                :onerror="onLazyImageError"
-              >
-              <div v-if="links" class="pt-2 text-start">
-                <ul class="menu">
-                  <li>
-                    <h2 class="menu-title">
-                      {{ t("beatmapset.direct-downloads") }}
-                    </h2>
-                    <ul>
-                      <li
-                        v-for="{ link, label } in links.directDownload"
-                        :key="`direct-${label}`"
-                      >
-                        <a :href="link">{{ label }}</a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li>
-                    <h2 class="menu-title">
-                      {{ t("beatmapset.external-links") }}
-                    </h2>
-                    <ul>
-                      <li
-                        v-for="{ link, label } in links.external"
-                        :key="`external-${label}`"
-                      >
-                        <a :href="link">{{ label }}</a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+        <!-- Improved Info Layout -->
+        <div class="beatmap-info-layout">
+          <!-- Cover Image Section -->
+          <div class="cover-section">
+            <img
+              class="cover-image"
+              :src="beatmapset.assets['list@2x']"
+              :alt="selectedMap.version"
+              :onerror="onLazyImageError"
+            >
+          </div>
+          
+          <!-- Download Links - Collapsible -->
+          <transition name="downloads-expand">
+            <div v-if="showDownloads && links" class="download-section">
+              <div class="download-group">
+                <h3 class="section-subtitle">
+                  {{ t("beatmapset.direct-downloads") }}
+                </h3>
+                <div class="link-buttons">
+                  <a
+                    v-for="{ link, label } in links.directDownload"
+                    :key="`direct-${label}`"
+                    :href="link"
+                    class="download-btn primary"
+                  >
+                    {{ label }}
+                  </a>
+                </div>
+              </div>
+              
+              <div class="download-group">
+                <h3 class="section-subtitle">
+                  {{ t("beatmapset.external-links") }}
+                </h3>
+                <div class="link-buttons">
+                  <a
+                    v-for="{ link, label } in links.external"
+                    :key="`external-${label}`"
+                    :href="link"
+                    class="download-btn"
+                  >
+                    {{ label }}
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="w-full md:w-2/3">
-            <dl>
+          </transition>
+          
+          <!-- Stats Grid -->
+          <div class="stats-section">
+            <dl class="stats-grid">
               <div class="striped rounded-tl-xl">
                 <dt class="text-sm font-medium text-gbase-500">
                   {{ t("beatmapset.creator") }}
@@ -569,6 +571,19 @@ de-DE:
               </div>
             </dl>
           </div>
+          
+          <!-- Downloads Toggle Button -->
+          <button
+            v-if="links"
+            class="downloads-toggle"
+            @click="showDownloads = !showDownloads"
+          >
+            <span>{{ showDownloads ? '隐藏下载链接' : '显示下载链接' }}</span>
+            <icon
+              :name="showDownloads ? 'mdi:chevron-up' : 'mdi:chevron-down'"
+              class="w-5 h-5"
+            />
+          </button>
         </div>
         <div
           class="collapse pointer-events-none transition-all will-change-transform duration-300 ease-out"
@@ -635,9 +650,10 @@ de-DE:
 </template>
 
 <style scoped lang="postcss">
+/* Enhanced header */
 .header-with-maps {
-  @apply sm:flex pb-0 mt-2 items-center justify-between text-gbase-900 dark:text-gbase-100;
-  transition: 0.3s ease;
+  @apply flex flex-col gap-6 py-16 md:py-24 items-center text-center;
+  @apply text-white;
 }
 
 :deep(table.table.clear-rounded-tl) {
@@ -654,27 +670,32 @@ de-DE:
   transform: translate3d(0, 0, 0);
 }
 
+/* Enhanced background with better blur */
 .pre-bg-cover {
+  @apply relative;
+  min-height: 50vh;
+
   &:before {
     content: "";
-    position: absolute;
-    @apply top-20 left-0 right-0 bg-cover z-[-1];
-    height: 30vmin;
+    @apply absolute inset-0 z-[-1];
+    background-image: v-bind("lazyBgCover");
+    background-size: cover;
+    background-position: center;
+    filter: blur(50px) brightness(0.5);
+    transform: scale(1.1);
   }
 
   &.ready::before {
-    background-image: v-bind("lazyBgCover");
-    animation: fadeIn 0.5s ease-out forwards;
+    animation: heroBgFade 0.8s ease-out forwards;
   }
 }
 
-@keyframes fadeIn {
+@keyframes heroBgFade {
   0% {
-    filter: opacity(0) contrast(0.5) brightness(1) blur(5em);
+    filter: opacity(0) blur(60px) brightness(0.3);
   }
-
   100% {
-    filter: opacity(0.4) contrast(0.2) brightness(1.5) blur(3em);
+    filter: opacity(1) blur(50px) brightness(0.5);
   }
 }
 
@@ -690,13 +711,233 @@ de-DE:
   }
 }
 
+/* Mode icons enhancement */
 .h-mode {
-  @apply transition duration-200 ease-in-out font-semibold cursor-pointer opacity-50;
-  @apply sm:py-1 sm:my-0;
-  @apply w-7 h-7;
+  @apply w-8 h-8;
+  @apply transition-all duration-300 ease-out;
+  @apply opacity-40 cursor-pointer;
+  @apply hover:opacity-70 hover:scale-105;
 }
 
 .tab-active .h-mode {
   @apply opacity-100;
+}
+
+/* Card enhancement */
+.card {
+  @apply shadow-2xl rounded-2xl;
+  animation: cardSlideUp 0.6s ease-out;
+}
+
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Improved Beatmap Info Layout */
+.beatmap-info-layout {
+  @apply flex flex-col gap-6 p-6;
+}
+
+.cover-section {
+  @apply w-full max-w-md mx-auto;
+}
+
+.cover-image {
+  @apply w-full rounded-2xl shadow-2xl;
+  @apply transition-transform duration-300;
+}
+
+.cover-image:hover {
+  @apply scale-105;
+}
+
+/* Download Section */
+.download-section {
+  @apply flex flex-col md:flex-row gap-6;
+}
+
+.download-group {
+  @apply flex-1;
+}
+
+.section-subtitle {
+  @apply text-xs uppercase tracking-widest font-semibold mb-3;
+  @apply text-gbase-600 dark:text-gbase-400;
+}
+
+.link-buttons {
+  @apply flex flex-col gap-2;
+}
+
+.download-btn {
+  @apply block py-3 px-4 rounded-lg text-center;
+  @apply text-sm font-medium;
+  @apply bg-black/5 dark:bg-white/5;
+  @apply border border-black/10 dark:border-white/10;
+  @apply transition-all duration-200;
+  @apply hover:bg-black/10 dark:hover:bg-white/10;
+  @apply hover:shadow-md hover:-translate-y-0.5;
+}
+
+.download-btn.primary {
+  @apply bg-blue-500/10 text-blue-600 dark:text-blue-400;
+  @apply border-blue-500/20;
+  @apply hover:bg-blue-500/20;
+}
+
+/* Stats Section */
+.stats-section {
+  @apply mt-4;
+}
+
+.stats-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-px;
+  @apply bg-black/5 dark:bg-white/5;
+  @apply rounded-xl overflow-hidden;
+}
+
+.stats-grid .striped {
+  @apply bg-white dark:bg-gbase-900;
+  @apply p-4;
+  @apply flex items-center justify-between;
+  @apply transition-colors duration-200;
+  @apply hover:bg-black/[0.02] dark:hover:bg-white/[0.02];
+}
+
+/* Downloads Toggle Button */
+.downloads-toggle {
+  @apply w-full py-3 px-4 mt-4;
+  @apply flex items-center justify-center gap-2;
+  @apply text-sm font-medium;
+  @apply bg-black/5 dark:bg-white/5;
+  @apply border border-black/10 dark:border-white/10;
+  @apply rounded-lg;
+  @apply transition-all duration-200;
+  @apply hover:bg-black/10 dark:hover:bg-white/10;
+  @apply cursor-pointer;
+}
+
+.downloads-toggle:hover {
+  @apply shadow-md;
+}
+
+/* Downloads Expand Animation */
+.downloads-expand-enter-active,
+.downloads-expand-leave-active {
+  transition: all 0.3s ease-out;
+  overflow: hidden;
+}
+
+.downloads-expand-enter-from {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-20px);
+}
+
+.downloads-expand-enter-to {
+  opacity: 1;
+  max-height: 500px;
+  transform: translateY(0);
+}
+
+.downloads-expand-leave-from {
+  opacity: 1;
+  max-height: 500px;
+  transform: translateY(0);
+}
+
+.downloads-expand-leave-to {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-20px);
+}
+
+.stats-grid .striped dt {
+  @apply text-sm font-medium;
+  @apply text-gbase-600 dark:text-gbase-400;
+}
+
+.stats-grid .striped dd {
+  @apply flex items-center gap-2;
+  @apply text-base font-mono;
+  @apply text-gbase-900 dark:text-gbase-100;
+}
+/* Stats section spacing */
+.card dl {
+  @apply divide-y divide-black/5 dark:divide-white/5;
+}
+
+.card .striped {
+  @apply py-4 px-6;
+  @apply transition-colors duration-200;
+  @apply hover:bg-black/[0.02] dark:hover:bg-white/[0.02];
+}
+
+.card .striped:nth-child(4n+1),
+.card .striped:nth-child(4n+2) {
+  @apply bg-black/[0.01] dark:bg-white/[0.01];
+}
+
+/* Cover image enhancement */
+.card img.rounded-xl {
+  @apply rounded-2xl shadow-xl;
+  @apply transition-transform duration-300;
+}
+
+.card img.rounded-xl:hover {
+  @apply scale-105;
+}
+
+/* Links styling */
+.menu li a {
+  @apply py-2.5 px-4 rounded-lg;
+  @apply text-sm font-light;
+  @apply bg-black/[0.02] dark:bg-white/[0.02];
+  @apply transition-all duration-200;
+}
+
+.menu li a:hover {
+  @apply bg-black/[0.05] dark:bg-white/[0.05];
+  @apply translate-x-1 shadow-sm;
+}
+
+/* Difficulty tabs enhancement */
+.tabs-bordered .tab {
+  @apply px-6 py-2.5 rounded-full;
+  @apply bg-white/10 backdrop-blur-sm;
+  @apply border border-white/20;
+  @apply text-white/80 font-light text-sm text-center;
+  @apply transition-all duration-300;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap;
+  min-width: fit-content;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tabs-bordered .tab:hover {
+  @apply bg-white/20 text-white scale-105;
+}
+
+.tabs-bordered .tab-active {
+  @apply bg-white text-black font-medium;
+  @apply shadow-lg scale-105;
+}
+
+/* Leaderboard enhancement */
+.rounded-lg.bg-base-100 {
+  @apply shadow-xl;
+  animation: cardSlideUp 0.6s ease-out 0.3s backwards;
 }
 </style>

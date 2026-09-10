@@ -47,7 +47,7 @@ de-DE:
 </i18n>
 
 <template>
-  <table class="table table-zebra">
+  <table class="scores-table-modern">
     <thead>
       <tr>
         <th scope="col" class="text-right">
@@ -139,4 +139,92 @@ de-DE:
       </template>
     </tbody>
   </table>
+
+<style scoped lang="postcss">
+.scores-table-modern {
+  @apply w-full border-collapse;
+}
+
+.scores-table-modern thead {
+  @apply bg-black/[0.02] dark:bg-white/[0.02];
+}
+
+.scores-table-modern thead tr th {
+  @apply py-4 px-6;
+  @apply text-xs uppercase tracking-wider font-semibold;
+  @apply text-gbase-600 dark:text-gbase-400;
+  @apply border-b border-black/10 dark:border-white/10;
+  @apply text-left;
+}
+
+.scores-table-modern thead tr th.text-right {
+  @apply text-right;
+}
+
+.scores-table-modern tbody tr {
+  @apply border-b border-black/5 dark:border-white/5;
+  @apply transition-all duration-200;
+}
+
+.scores-table-modern tbody tr:hover {
+  @apply bg-black/[0.02] dark:bg-white/[0.02];
+}
+
+.scores-table-modern tbody tr:last-child {
+  @apply border-b-0;
+}
+
+.scores-table-modern tbody td,
+.scores-table-modern tbody th {
+  @apply py-4 px-6;
+  @apply text-sm;
+}
+
+.scores-table-modern tbody td.text-right {
+  @apply text-right;
+}
+
+/* Rank column */
+.scores-table-modern tbody td:first-child {
+  @apply font-mono font-semibold;
+  @apply text-gbase-700 dark:text-gbase-300;
+}
+
+/* Player column with avatar */
+.scores-table-modern .avatar {
+  @apply shrink-0;
+}
+
+.scores-table-modern .avatar img {
+  @apply rounded-lg shadow-sm;
+}
+
+/* Actions links */
+.scores-table-modern .link {
+  @apply inline-flex items-center gap-1.5;
+  @apply py-1.5 px-3 rounded-lg;
+  @apply text-xs font-medium;
+  @apply bg-black/5 dark:bg-white/5;
+  @apply transition-all duration-200;
+  @apply hover:bg-black/10 dark:hover:bg-white/10;
+  @apply hover:shadow-sm;
+  @apply no-underline;
+}
+
+.scores-table-modern .link:first-child {
+  @apply bg-blue-500/10 text-blue-600 dark:text-blue-400;
+  @apply hover:bg-blue-500/20;
+}
+
+/* Mods display */
+.scores-table-modern .flex.gap-1 {
+  @apply flex-wrap;
+}
+
+/* Date column */
+.scores-table-modern tbody td.font-mono {
+  @apply text-xs;
+  @apply text-gbase-600 dark:text-gbase-400;
+}
+</style>
 </template>

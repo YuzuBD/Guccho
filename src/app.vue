@@ -31,7 +31,7 @@ const { l1Status, l2Status } = useZoomModal()
         aria-label="Close sidebar"
         class="drawer-overlay"
       />
-      <ul class="min-h-full p-4 menu w-80 bg-white dark:bg-[#1a1a1a]">
+      <ul class="min-h-full p-4 menu w-80 bg-white/80 dark:bg-black/80 backdrop-blur-xl">
         <app-nav-items>
           <template #start>
             <li>
