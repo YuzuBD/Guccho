@@ -867,10 +867,17 @@ de-DE:
 /* Ranking System Switcher Tabs */
 .tabs-lifted .tab {
   @apply rounded-t-lg;
+  @apply rounded-br-lg;
 }
 
 .tabs-lifted .tab-active {
-  @apply rounded-t-lg;
+  @apply rounded-tl-lg;
+  @apply rounded-br-none;
+}
+
+.tabs-lifted .tab-active ~ .tab {
+  @apply rounded-tr-lg rounded-tl-none;
+  @apply rounded-bl-lg rounded-br-none;
 }
 
 .stats-grid .striped dd {
