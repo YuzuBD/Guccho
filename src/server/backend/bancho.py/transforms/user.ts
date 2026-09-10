@@ -139,12 +139,19 @@ export function toUserCompact(user: Pick<DatabaseUser, DatabaseUserCompactFields
       user,
       { avatar }
     ),
+    backgroundSrc: avatar.domain
+      ? toUserBackgroundSrc(user, { avatar })
+      : undefined,
     roles: toRoles(user.priv),
   } satisfies UserCompact<Id>
 }
 
 export function toUserAvatarSrc(user: { id: Id }, config: { avatar: { domain: string } }) {
-  return `https://${config.avatar.domain}/${user.id}`
+  return `//${config.avatar.domain}/${user.id}`
+}
+
+export function toUserBackgroundSrc(user: { id: Id }, config: { avatar: { domain: string } }) {
+  return `//${config.avatar.domain}/${user.id}-bg`
 }
 
 export type DatabaseUserOptionalFields = 'email' | 'preferredMode'
@@ -204,6 +211,9 @@ export function toFullUser(
       // @ts-expect-error you are dumb
       config
     ),
+    backgroundSrc: config.avatar.domain
+      ? toUserBackgroundSrc(user, config as any)
+      : undefined,
     roles: toRoles(user.priv),
   }
 }

@@ -16,7 +16,11 @@ export class MailProvider {
   config = config()
   constructor() {
     this.transport = m.createTransport(this.config.mail.auth)
-    this.transport.verify()
+    this.transport.verify().catch((e) => {
+      // fire-and-forget verification must not become an unhandled
+      // rejection: an unreachable SMTP would crash the process.
+      console.warn('[mail] smtp verify failed, mail features will not work:', e?.message ?? e)
+    })
   }
 
   async send(mail: MailProvider.Mail) {

@@ -25,6 +25,14 @@ const enum UploadingAvatarState {
 }
 
 // eslint-disable-next-line antfu/no-const-enum
+const enum UploadingBackgroundState {
+  Errored,
+  Idle,
+  Uploading,
+  Succeed,
+}
+
+// eslint-disable-next-line antfu/no-const-enum
 const enum ChangeEmailState {
   Errored,
   Idle,
@@ -105,6 +113,10 @@ const cropper = shallowRef<InstanceType<typeof Cropper> | null>(null)
 const croppedAvatar = shallowRef<ArrayBuffer>()
 const avatarError = shallowRef<string>()
 
+const newBackground = shallowRef<File>()
+const newBackgroundURL = shallowRef<string>()
+const backgroundError = shallowRef<string>()
+
 if (user.value?.profile) {
   const pf = user.value.profile
   if (pf.raw) {
@@ -114,7 +126,7 @@ if (user.value?.profile) {
 let changeEmailTimeout: NodeJS.Timeout | undefined
 
 const updateUserSettingsState = shallowRef(UpdateUserSettingsState.Idle)
-const uploadingAvatarState = shallowRef(UploadingAvatarState.Idle)
+const uploadingBackgroundState = shallowRef(UploadingBackgroundState.Idle)
 const changePasswordState = shallowRef(ChangePasswordState.Idle)
 const changeEmailState = ref<[ChangeEmailStep, ChangeEmailState]>([ChangeEmailStep.InputEmail, ChangeEmailState.Idle])
 
@@ -243,6 +255,45 @@ async function selectAvatarFile(e: Event) {
 
   newAvatar.value = file
   newAvatarURL.value = URL.createObjectURL(file)
+}
+
+async function selectBackgroundFile(e: Event) {
+  backgroundError.value = undefined
+  const file = (e?.target as HTMLInputElement)?.files?.[0]
+  if (!file) {
+    return
+  }
+
+  if (file.byteLength > 8_000_000) {
+    backgroundError.value = t('background.size-too-big')
+    return
+  }
+
+  newBackground.value = file
+  newBackgroundURL.value = URL.createObjectURL(file)
+}
+
+async function saveBackground() {
+  if (!newBackground.value) {
+    return
+  }
+
+  uploadingBackgroundState.value = UploadingBackgroundState.Uploading
+
+  try {
+    const url = await app$.$client.me.changeBackground.mutate({
+      background: new Uint8Array(await newBackground.value.arrayBuffer()),
+    })
+
+    uploadingBackgroundState.value = UploadingBackgroundState.Succeed
+    if (user.value) {
+      user.value.backgroundSrc = url
+    }
+  }
+  catch (err) {
+    uploadingBackgroundState.value = UploadingBackgroundState.Errored
+    backgroundError.value = String(err)
+  }
 }
 
 function crop({ canvas }: { canvas: HTMLCanvasElement }) {
@@ -398,6 +449,13 @@ en-GB:
       done: Done
       abort: Cancel
 
+
+  background:
+    title: Profile Background
+    description: Max 8MB, displayed behind your profile header
+    change: Change
+    save: Save
+    size-too-big: Image size too large (max 8MB)
   password:
     change: change
     literal: Password
@@ -481,6 +539,13 @@ fr-FR:
   reset: Réinitialiser
 
   preferences: Préférences
+
+  background:
+    title: 个人页背景图
+    description: 最大 8MB，显示在个人页头部后方
+    change: 更改
+    save: 保存
+    size-too-big: 图片过大（最大 8MB）
   username: Nom d'utilisateur
   safe-name: Lien
   email: Email
@@ -916,6 +981,70 @@ de-DE:
               @{{ user.safeName }}
             </h2>
             <div class="pb-4" />
+          </div>
+        </div>
+
+        <!-- Background Upload Card -->
+        <div class="flex flex-wrap items-end gap-4 p-3 overflow-hidden lg:mr-4">
+          <div class="drop-shadow-md">
+            <div
+              class="relative z-10 mask mask-squircle hoverable w-100 self-center [&>img]:hover:blur-lg [&>img]:hover:opacity-50 no-animation"
+            >
+              <label
+                for="background-file-input"
+                class="absolute top-0 z-20 w-full h-full btn btn-primary hover:bg-primary/50 focus:active:bg-primary/50 cursor-pointer"
+              >
+                <icon name="ic:round-image" class="w-5 h-5" size="100%" />
+                <span>{{ t("background.change") }}</span>
+              </label>
+              <img
+                v-if="newBackgroundURL || user.backgroundSrc"
+                :src="newBackgroundURL || user.backgroundSrc"
+                class="w-40 h-40 pointer-events-none object-cover"
+              >
+              <div
+                v-else
+                class="w-40 h-40 bg-gbase-100 dark:bg-gbase-800 flex items-center justify-center"
+              >
+                <icon name="ic:outline-image-not-supported" class="w-12 h-12 opacity-20" />
+              </div>
+            </div>
+            <input
+              id="background-file-input"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="selectBackgroundFile"
+            >
+          </div>
+          <div class="flex flex-col gap-2">
+            <div>
+              <h3 class="text-sm font-medium">{{ t("background.title") }}</h3>
+              <p class="text-xs opacity-60">{{ t("background.description") }}</p>
+            </div>
+            <t-button
+              v-if="newBackground && uploadingBackgroundState === UploadingBackgroundState.Idle"
+              type="button"
+              class="btn btn-sm btn-primary"
+              @click="saveBackground"
+            >
+              {{ t("background.save") }}
+            </t-button>
+            <span
+              v-else-if="uploadingBackgroundState === UploadingBackgroundState.Uploading"
+              class="text-xs"
+            >
+              {{ t("status.uploading") }}
+            </span>
+            <span
+              v-else-if="uploadingBackgroundState === UploadingBackgroundState.Succeed"
+              class="text-xs text-success"
+            >
+              {{ t("status.done") }}
+            </span>
+            <span v-if="backgroundError" class="text-xs text-error">
+              {{ backgroundError }}
+            </span>
           </div>
         </div>
         <div class="lg:mr-4">

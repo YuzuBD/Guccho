@@ -121,6 +121,60 @@ onMounted(() => {
     stop.forEach(item => item?.())
   })
 })
+
+// Hide navbar/footer/btm-nav on first screen, show when scrolling to stats
+const navbarEl = ref<HTMLElement | null>(null)
+const footerEl = ref<HTMLElement | null>(null)
+const btmNavEl = ref<HTMLElement | null>(null)
+const heroInView = ref(true)
+
+onMounted(async () => {
+  navbarEl.value = document.querySelector('#app-drawer > :first-child') as HTMLElement
+  footerEl.value = document.querySelector('footer.footer-minimal') as HTMLElement
+  
+  // Wait for teleported btm-nav (client-only + teleport)
+  await nextTick()
+  await new Promise(resolve => setTimeout(resolve, 100))
+  btmNavEl.value = document.querySelector('.btm-nav.up-nav-item') as HTMLElement
+  
+  // Initially hide nav/footer/btm-nav
+  if (navbarEl.value) navbarEl.value.style.transform = 'translateY(-100%)'
+  if (footerEl.value) footerEl.value.style.opacity = '0'
+  if (btmNavEl.value) btmNavEl.value.style.opacity = '0'
+  
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      heroInView.value = entry.isIntersecting
+      
+      if (navbarEl.value) {
+        navbarEl.value.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+        navbarEl.value.style.transform = entry.isIntersecting ? 'translateY(-100%)' : 'translateY(0)'
+      }
+      if (footerEl.value) {
+        footerEl.value.style.transition = 'opacity 0.4s ease'
+        footerEl.value.style.opacity = entry.isIntersecting ? '0' : '1'
+      }
+      if (btmNavEl.value) {
+        btmNavEl.value.style.transition = 'opacity 0.4s ease'
+        btmNavEl.value.style.opacity = entry.isIntersecting ? '0' : '1'
+      }
+    },
+    { threshold: 0.1 }
+  )
+  
+  const heroElement = document.querySelector('.user-profile-minimal')
+  if (heroElement) {
+    observer.observe(heroElement)
+  }
+  
+  onBeforeUnmount(() => {
+    observer.disconnect()
+    // Restore nav/footer/btm-nav
+    if (navbarEl.value) navbarEl.value.style.transform = ''
+    if (footerEl.value) footerEl.value.style.opacity = ''
+    if (btmNavEl.value) btmNavEl.value.style.opacity = ''
+  })
+})
 </script>
 
 <i18n lang="yaml">
@@ -344,5 +398,9 @@ de-DE:
 
 .up-nav-item>* {
   @apply md:basis-32
+}
+
+#statistics {
+  scroll-snap-align: start;
 }
 </style>

@@ -5,13 +5,14 @@ import type { LeaderboardRankingSystem } from '$active'
 import type { RouteLocationRaw } from '#vue-router'
 import { type SwitcherPropType } from '~/composables/useSwitcher'
 import { Mode, Ruleset } from '~/def'
+import { Feature } from '~/def/features'
 import type { AppRouter } from '~/server/trpc/routers'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 type RouterError = inferRouterError<AppRouter>
 
 export default defineStore('userpage', () => {
-  const { hasRuleset } = useAdapterConfig()
+  const { hasRuleset, supportedFeatures } = useAdapterConfig()
 
   const app = useNuxtApp()
   const router = useRouter()
@@ -64,7 +65,9 @@ export default defineStore('userpage', () => {
       })
       user.value = u
 
-      dan.count = await app.$client.dan.userClearedScores.count.query({ id: user.value!.id })
+      if (supportedFeatures.has(Feature.Dan)) {
+        dan.count = await app.$client.dan.userClearedScores.count.query({ id: user.value!.id })
+      }
 
       if (initSwitcher?.mode || initSwitcher?.ruleset || initSwitcher?.rankingSystem) {
         setSwitcher(initSwitcher)

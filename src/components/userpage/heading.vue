@@ -94,7 +94,16 @@ async function toggleFriend() {
     v-if="page.user"
     class="user-profile-minimal"
   >
-    <div class="custom-container">
+    <!-- Blurred background layer -->
+    <div v-if="page.user.backgroundSrc" class="hero-backdrop">
+      <div
+        class="hero-backdrop-image"
+        :style="`background-image: url(${page.user.backgroundSrc})`"
+      />
+      <div class="hero-backdrop-veil" />
+    </div>
+
+    <div class="custom-container hero-inner">
       <!-- Mode Switcher Sidebar -->
       <app-mode-switcher :model-value="page.switcher" @update:model-value="page.setSwitcher" />
       
@@ -194,6 +203,7 @@ async function toggleFriend() {
           </div>
         </div>
       </div>
+
     </div>
   </section>
 </template>
@@ -222,13 +232,62 @@ de-DE:
 
 <style scoped lang="postcss">
 .user-profile-minimal {
+  /* Fill the entire first screen */
+  min-height: calc(100dvh - 5rem);
+  @apply relative flex flex-col justify-center;
   @apply py-16 md:py-20;
+  
+  /* Scroll snap for resistance effect */
+  scroll-snap-align: start;
+}
+
+/* Blurred background */
+/* Blurred background - extend to viewport top */
+.hero-backdrop {
+  @apply absolute -z-10 overflow-hidden;
+  top: -5rem; /* Cover navbar height */
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.hero-backdrop-image {
+  @apply absolute bg-cover bg-center;
+  /* Overscan so the blur has no feathered edges */
+  inset: -4rem;
+  filter: blur(16px) saturate(1.15) brightness(1.05);
+  transform: scale(1.04);
+}
+
+.hero-backdrop-veil {
+  @apply absolute inset-0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.45) 55%,
+    rgba(255, 255, 255, 0.65) 100%
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  .hero-backdrop-veil {
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 10, 0.5) 0%,
+      rgba(10, 10, 10, 0.45) 55%,
+      rgba(10, 10, 10, 0.65) 100%
+    );
+  }
+}
+
+.hero-inner {
+  @apply relative w-full;
 }
 
 .profile-hero {
   @apply flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12;
-  @apply pb-12 md:pb-16 border-b border-black/5 dark:border-white/5;
 }
+
 
 .avatar-section {
   @apply flex-shrink-0;

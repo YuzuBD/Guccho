@@ -5,6 +5,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Scroll snap only on user pages */
+body:has(.user-profile-minimal) {
+  scroll-snap-type: y mandatory;
+}
+
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

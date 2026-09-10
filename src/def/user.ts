@@ -85,6 +85,7 @@ export interface UserCompact<Id> {
   safeName: string
   flag?: CountryCode
   avatarSrc?: string
+  backgroundSrc?: string
 
   roles: UserRole[]
 }

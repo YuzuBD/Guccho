@@ -922,6 +922,25 @@ class DBUserProvider extends Base<Id, ScoreId> implements Base<Id, ScoreId> {
     return `//${this.config.avatar.domain}/${user.id}?${Date.now()}`
   }
 
+  async changeBackground(user: { id: Id }, background: Uint8Array) {
+    if (!this.config.avatar.location) {
+      throwGucchoError(GucchoError.MissingServerAvatarConfig)
+    }
+    const mime = await imageType(background)
+
+    if (!mime?.mime.includes('image')) {
+      throwGucchoError(GucchoError.MimeNotImage)
+    }
+
+    // `<id>-bg.*` is deliberately outside the `<id>.*` glob used by changeAvatar,
+    // so uploading an avatar never deletes the background (and vice versa).
+    const oldFiles = await glob(join(this.config.avatar.location, `${user.id}-bg.*`))
+    await Promise.all(oldFiles.map(file => unlink(file)))
+
+    await writeFile(join(this.config.avatar.location, `${user.id}-bg.${mime.ext}`), background)
+    return `//${this.config.avatar.domain}/${user.id}-bg?${Date.now()}`
+  }
+
   async search({ keyword, limit }: { keyword: string; limit: number }) {
     const _user = `%${keyword}`
     const user_ = `${keyword}%`

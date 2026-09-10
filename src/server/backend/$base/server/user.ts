@@ -166,6 +166,8 @@ export abstract class UserProvider<Id, ScoreId> extends IdTransformable {
 
   abstract changeAvatar(user: { id: Id }, avatar: Uint8Array): Promise<string>
 
+  abstract changeBackground(user: { id: Id }, background: Uint8Array): Promise<string>
+
   abstract search(opt: {
     keyword: string
     limit: number

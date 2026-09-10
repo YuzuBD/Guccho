@@ -81,7 +81,7 @@ export const zodSearchBeatmap = union([
 ])
 
 export const zodFQDN = string().trim().refine((input) => {
-  return validator.isFQDN(input)
+  return validator.isFQDN(input, { require_tld: false }) || validator.isIP(input)
 })
 
 export const zodPath = string().trim().superRefine((val, ctx) => {

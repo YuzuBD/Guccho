@@ -142,6 +142,16 @@ export const router = _router({
       return r
     }),
 
+  changeBackground: pUser
+    .input(object({
+      background: instanceof_(Uint8Array),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const r = await users.changeBackground(mapId(ctx.user, UserProvider.stringToId), input.background)
+      logger.info(`user ${ctx.user.safeName}<${ctx.user.id}> changed background.`, { user: pick(ctx.user, ['id', 'name']) })
+      return r
+    }),
+
   updatePassword: pUser
     .input(
       object({
