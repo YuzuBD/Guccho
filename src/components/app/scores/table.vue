@@ -138,7 +138,7 @@ de-DE:
         </tr>
       </template>
     </tbody>
-  </table>
+</template>
 
 <style scoped lang="postcss">
 .scores-table-modern {
@@ -227,4 +227,3 @@ de-DE:
   @apply text-gbase-600 dark:text-gbase-400;
 }
 </style>
-</template>
