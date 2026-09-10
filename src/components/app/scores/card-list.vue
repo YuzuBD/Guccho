@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { RankingSystem } from '$active'
-import type { LeaderboardScore } from '~/def/score'
+import type { BeatmapLeaderboard } from '~/def/leaderboard'
+import { Rank } from '~/def'
 
 const props = defineProps<{
-  scores: LeaderboardScore[]
+  scores: BeatmapLeaderboard<string>[]
   rankingSystem: RankingSystem
 }>()
 
 const { t } = useI18n()
+const comma = createNumberFormatter()
+const pp = createPPFormatter()
 </script>
 
 <i18n lang="yaml">
@@ -27,14 +30,14 @@ zh-CN:
       >
         <!-- Rank Badge -->
         <div class="rank-badge">
-          #{{ item.rank }}
+          #{{ index + 1 }}
         </div>
 
         <!-- Player Info -->
         <div class="player-section">
           <div class="avatar">
             <nuxt-img
-              :src="`https://a.ppy.sh/${item.user.id}`"
+              :src="item.user.avatarSrc"
               :alt="item.user.name"
               loading="lazy"
               width="48"
@@ -46,12 +49,7 @@ zh-CN:
               {{ item.user.name }}
             </div>
             <div class="player-meta">
-              <img
-                :src="`https://osu.ppy.sh/images/flags/${item.user.country}.png`"
-                :alt="item.user.country"
-                class="flag"
-              >
-              <span class="score-date">{{ new Date(item.playTime * 1000).toLocaleDateString() }}</span>
+              <span class="score-date">{{ item.score.playedAt.toLocaleDateString() }}</span>
             </div>
           </div>
         </div>
@@ -60,37 +58,37 @@ zh-CN:
         <div class="stats-section">
           <div class="stat-item primary">
             <div class="stat-label">Score</div>
-            <div class="stat-value">{{ item.score.toLocaleString() }}</div>
+            <div class="stat-value">{{ comma(item.score.score) }}</div>
           </div>
           <div class="stat-item">
             <div class="stat-label">Accuracy</div>
-            <div class="stat-value">{{ (item.accuracy * 100).toFixed(2) }}%</div>
+            <div class="stat-value">{{ Number(item.score.accuracy).toFixed(2) }}%</div>
           </div>
           <div class="stat-item">
-            <div class="stat-label">{{ rankingSystem === 'ppv2' ? 'PP' : 'Score' }}</div>
-            <div class="stat-value">{{ rankingSystem === 'ppv2' ? item.pp?.toFixed(0) : item.score }}</div>
+            <div class="stat-label">{{ rankingSystem === Rank.PPv2 ? 'PP' : 'Score' }}</div>
+            <div class="stat-value">{{ rankingSystem === Rank.PPv2 ? pp(item.score[Rank.PPv2] || 0) : comma(item.score.score) }}</div>
           </div>
           <div class="stat-item">
             <div class="stat-label">Combo</div>
-            <div class="stat-value">{{ item.maxCombo }}x</div>
+            <div class="stat-value">{{ item.score.maxCombo }}x</div>
           </div>
         </div>
 
         <!-- Hit Stats -->
         <div class="hits-section">
-          <span class="hit-count">{300} {{ item.n300 }}</span>
-          <span class="hit-count">{100} {{ item.n100 }}</span>
-          <span class="hit-count">{50} {{ item.n50 }}</span>
-          <span class="hit-count miss">Miss {{ item.nMiss }}</span>
+          <span class="hit-count">300 {{ item.score.n300 }}</span>
+          <span class="hit-count">100 {{ item.score.n100 }}</span>
+          <span class="hit-count">50 {{ item.score.n50 }}</span>
+          <span class="hit-count miss">Miss {{ item.score.nMiss }}</span>
         </div>
 
         <!-- Actions -->
         <div class="actions-section">
-          <nuxt-link :to="`/score/${item.id}`" class="action-link">
+          <nuxt-link :to="`/score/${item.score.id}`" class="action-link">
             <Icon name="material-symbols:info-outline" />
             Detail
           </nuxt-link>
-          <a :href="`osu://spectate/${item.id}`" class="action-link primary">
+          <a :href="`/replay/${item.score.id}/download`" class="action-link primary">
             <Icon name="material-symbols:play-arrow" />
             Replay
           </a>
@@ -98,7 +96,7 @@ zh-CN:
 
         <!-- Grade Badge -->
         <div class="grade-badge">
-          {{ item.grade }}
+          {{ item.score.grade }}
         </div>
       </div>
     </template>

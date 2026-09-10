@@ -22,11 +22,17 @@ export interface Leaderboard<
 export interface BeatmapLeaderboard<Id> {
   user: UserCompact<Id>
   score: {
-    id: unknown
+    id: string
     score: number | bigint
     accuracy: number
     playedAt: Date
     mods: Mod[]
+    maxCombo: number
+    grade: string
+    n300: number
+    n100: number
+    n50: number
+    nMiss: number
   } & Partial<Record<PPRankingSystem, number>>
   rank: number
 }
