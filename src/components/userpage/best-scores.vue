@@ -84,7 +84,16 @@ const {
   }
 })
 
-watch([() => page.user, bpPage], async () => {
+/*
+ * Refetch when the ranking system changes. Without this the list keeps rendering the
+ * values fetched for the previous system (e.g. pp) until a full page reload.
+ *
+ * `page.switcher` is passed as the reactive source itself, not as a getter
+ * (`() => page.switcher`): a getter returns the same object reference every time and
+ * would never trigger. Passing the shallowReactive object lets Vue track its top-level
+ * properties.
+ */
+watch([() => page.user, page.switcher, bpPage], async () => {
   if (!page.user) {
     return
   }
@@ -106,8 +115,9 @@ const transition = computed(() => {
   }
   return 'none'
 })
+// Same getter pitfall as above — must watch the object itself to ever fire.
 watch(
-  () => page.switcher,
+  page.switcher,
   () => {
     prevSwitcherState = { ...page.switcher }
   },

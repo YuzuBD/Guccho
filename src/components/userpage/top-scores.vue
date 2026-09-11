@@ -44,6 +44,16 @@ function switchBetweenScoreRanks() {
 const topPage = shallowRef(0)
 const outStatus = ref<'idle' | 'pending' | 'error' | 'success'>('pending')
 
+/*
+ * Registered here — in the synchronous part of setup — deliberately. This component
+ * awaits `useAsyncData()` further down, and a Vue lifecycle hook registered after a
+ * top-level await has no active component instance: it warns and silently never runs.
+ * The switcher watcher below lives outside onMounted for the same reason (`watch` needs
+ * no instance), so its disposal is wired up explicitly instead.
+ */
+let stopSwitcherWatch: (() => void) | undefined
+onBeforeUnmount(() => stopSwitcherWatch?.())
+
 defineExpose({
   status: outStatus,
 })
@@ -104,7 +114,7 @@ watch(status, (val) => {
 outStatus.value = status.value
 
 const transition = shallowRef<'left' | 'right'>('left')
-onMounted(() => {
+stopSwitcherWatch = (() => {
   const animationDirection = <T extends readonly any[]>(
     val: T[number],
     prevVal: T[number],
@@ -149,7 +159,10 @@ onMounted(() => {
       break
     }
   }
-  watch(() => page.switcher, (sw) => {
+
+  // `page.switcher` itself, not `() => page.switcher`: a getter would return the same
+  // object reference every time and the watcher would never fire.
+  return watch(page.switcher, (sw) => {
     if (switchBetweenScoreRanks()) {
       prevSwitcherState = { ...sw }
       return
@@ -161,7 +174,7 @@ onMounted(() => {
     refreshTop()
     prevSwitcherState = { ...sw }
   })
-})
+})()
 function prevPage(val: Ref<number>) {
   transition.value = 'left'
   if (val.value > 0) {
