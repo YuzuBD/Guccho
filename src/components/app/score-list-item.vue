@@ -74,6 +74,9 @@ const mods = computed(() => {
   }
   return modControl(props.score.mods)
 })
+
+/** Grade colours follow the classic osu! convention — same palette as the score page. */
+const gradeClass = computed(() => `score-item-grade-${String(props.score.grade).toLowerCase()}`)
 </script>
 
 <i18n lang="yaml">
@@ -114,11 +117,12 @@ de-DE:
       <icon v-else class="w-full h-full" name="clarity:unknown-status-line" size="100%" />
     </div>
 
-    <div class="truncate shrink grow leading-[1]">
+    <div class="truncate shrink grow">
       <template
         v-if="beatmap && beatmapIsVisible(beatmap)"
       >
         <router-link
+          class="block"
           :to="{
             name: 'beatmapset-id',
             params: {
@@ -137,18 +141,18 @@ de-DE:
           }"
         >
           <template v-if="meta">
-            <span class="text-xs font-semibold md:text-sm transition-[font-size]">{{ meta.artist }}</span><br>
-            <span class="text-sm font-bold md:text-lg transition-[font-size]">{{ meta.title }}</span>
+            <span class="score-item-artist">{{ meta.artist }}</span>
+            <span class="score-item-title">{{ meta.title }}</span>
           </template>
-          <div class="leading-snug md:leading-tight">
+          <div class="score-item-diff">
             <icon
               v-if="rankingStatusIconMapping[beatmap.status]"
               size="100%"
-              class="w-5 h-auto"
+              class="w-4 h-auto shrink-0"
               :name="rankingStatusIconMapping[beatmap.status]!"
               :aria-label="beatmap.status"
             />
-            <span v-if="beatmap" class="text-xs !leading-none font-semibold md:text-sm lg:text-md transition-[font-size]">
+            <span v-if="beatmap" class="score-item-version">
               {{ beatmap.version }}
             </span>
           </div>
@@ -157,7 +161,7 @@ de-DE:
       <div v-else>
         {{ t('unknown-beatmap') }}
       </div>
-      <time class="text-xs italic lg:text-sm font-extralight transition-[font-size]">
+      <time class="score-item-time">
         {{ score.playedAt.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'medium' }) }}
       </time>
     </div>
@@ -206,7 +210,7 @@ de-DE:
         <app-mod v-for="mod in mods" :key="mod" :mod="mod" class="w-5 h-5" />
       </span>
     </div>
-    <div class="self-center font-mono text-4xl text-center md:text-5xl w-14 md:w-20 transition-[font-size]">
+    <div class="score-item-grade" :class="gradeClass">
       {{ score.grade }}
     </div>
   </div>
@@ -220,4 +224,65 @@ de-DE:
 .score + .score {
   @apply border-t-2 border-gbase-500/20;
 }
+
+/* ---- Left column: label-style artist, theme-weight title ---- */
+.score-item-artist {
+  @apply block text-xs uppercase tracking-wider font-light;
+  @apply text-gbase-500 dark:text-gbase-500;
+  line-height: 1.4;
+}
+
+.score-item-title {
+  @apply block text-base md:text-lg font-normal tracking-tight;
+  @apply text-black dark:text-white;
+  line-height: 1.3;
+}
+
+.score-item-diff {
+  @apply flex items-center gap-1 mt-0.5;
+  @apply text-xs font-light;
+  @apply text-gbase-600 dark:text-gbase-400;
+  line-height: 1.4;
+}
+
+.score-item-version {
+  @apply truncate;
+}
+
+.score-item-time {
+  @apply block text-xs font-light;
+  @apply text-gbase-400 dark:text-gbase-500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+}
+
+/* ---- Grade ---- */
+.score-item-grade {
+  @apply self-center text-4xl md:text-5xl text-center w-14 md:w-20;
+  @apply font-extralight;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.score-item-grade-ssh,
+.score-item-grade-ss {
+  background: linear-gradient(160deg, #cbd5e1 0%, #94a3b8 60%, #64748b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.score-item-grade-sh,
+.score-item-grade-s {
+  background: linear-gradient(160deg, #f59e0b 0%, #d97706 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.score-item-grade-a { color: #22c55e; }
+.score-item-grade-b { color: #3b82f6; }
+.score-item-grade-c { color: #a855f7; }
+.score-item-grade-d { color: #f43f5e; }
+.score-item-grade-f { color: #9ca3af; }
 </style>
