@@ -6,10 +6,15 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Scroll snap only on user pages */
-body:has(.user-profile-minimal) {
-  scroll-snap-type: y mandatory;
-}
+/*
+ * NOTE: wheel "screen by screen" scrolling on user pages is implemented in
+ * `~/composables/useWheelSnap.ts`, not with CSS `scroll-snap-type`.
+ *
+ * CSS snap was tried here first and abandoned: the scrolling element is <html>, and
+ * snap is enforced by the compositor, which made the behaviour unverifiable in this
+ * project's headless setup. The composable also supports a wheel-delta *threshold*,
+ * which `scroll-snap` has no concept of.
+ */
 
 * {
   -webkit-font-smoothing: antialiased;

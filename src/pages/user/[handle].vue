@@ -23,6 +23,43 @@ const session = useSession()
 const page = userpageStore()
 const router = useRouter()
 
+// Wheel "resistance" is deliberately limited to the first two screens — the hero and
+// the statistics screen — as requested. Below that the page scrolls normally.
+//
+// NOTE: this must stay ABOVE the first `await` below. In an async setup(), lifecycle
+// hooks registered after an await have no active component instance, so the
+// composable's onMounted would silently never run.
+useWheelSnap({
+  stops: () => {
+    // Stop 0 is the true top of the document, not the hero's offset: the navbar sits
+    // above the hero in normal flow, so hero.offsetTop is 80 rather than 0 and snapping
+    // there would leave the page permanently 80px short of the top.
+    const second = statisticsScreenOffset()
+    return [0, second]
+  },
+})
+
+/**
+ * Scroll offset at which the statistics screen reads correctly: the ranking-system
+ * switcher parked just below the sticky navbar (80px tall, overlaying the top of the
+ * viewport whenever the page is scrolled), with the statistics block beneath it.
+ *
+ * Why anchor on `#statistics` instead of the switcher itself: the switcher is
+ * `position: sticky`, so its own bounding rect reports the *pinned* position and would
+ * drift with the scroll offset, making the stop unstable.
+ */
+function statisticsScreenOffset() {
+  const nav = document.querySelector<HTMLElement>('.navbar-container')
+  const switcher = document.querySelector<HTMLElement>('#statistics-switcher')
+  const stats = document.querySelector<HTMLElement>('#statistics')
+  if (!switcher || !stats) {
+    return window.innerHeight
+  }
+  const navHeight = nav?.offsetHeight ?? 0
+  const statsTop = stats.getBoundingClientRect().top + window.scrollY
+  return Math.max(0, statsTop - navHeight - switcher.offsetHeight)
+}
+
 await callOnce('init', async () => {
   await page.initServer({
     mode: h.searchParams.has('mode') ? h.searchParams.get('mode') as Mode : undefined,
@@ -277,7 +314,7 @@ de-DE:
       </div>
     </template>
     <template v-else>
-      <userpage-ranking-system-switcher class="z-10" />
+      <userpage-ranking-system-switcher id="statistics-switcher" class="z-10" />
       <div class="container max-w-screen-lg mx-auto transition" :class="{ 'opacity-75': page.statisticLoadingState }">
         <userpage-statistics id="statistics" ref="statistics" />
         <userpage-score-rank-composition />
@@ -400,7 +437,24 @@ de-DE:
   @apply md:basis-32
 }
 
-#statistics {
-  scroll-snap-align: start;
+/*
+ * Pin the ranking-system tabs directly beneath the sticky navbar.
+ *
+ * The navbar slides back in as soon as the hero drops below 10% visibility, and at that
+ * exact moment the tabs sit ~86px from the top of the viewport — i.e. already underneath
+ * the 80px navbar. Snapping could not fix that, so the bar pins itself instead: from the
+ * moment it would slide under the navbar it stays at `top: 5rem` (= the navbar's h-20).
+ */
+#statistics-switcher {
+  @apply sticky z-10;
+  top: 5rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+}
+
+@media (prefers-color-scheme: dark) {
+  #statistics-switcher {
+    background: rgba(26, 26, 26, 0.85);
+  }
 }
 </style>
